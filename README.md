@@ -1,5 +1,7 @@
 # Throwability
 
+![Logo](logo.png)
+
 ---
 
 Welcome to this project!
