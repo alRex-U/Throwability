@@ -6,9 +6,9 @@ issueTrackerURL = "https://github.com/alRex-U/Throwability/issues/" #optional
 modId = "throwability" #mandatory
 version = "${file.jarVersion}" #mandatory
 displayName = "Throwability" #mandatory
-updateJSONURL = "http://myurl.me/" #optional
-displayURL = "http://example.com/" #optional
-credits = "Thanks for this example mod goes to Java" #optional
+updateJSONURL = "https://www.curseforge.com/minecraft/mc-mods/throwability" #optional
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/throwability" #optional
+credits = "Thanks for Java, and Developers of Minecraft and Minecraft Forge" #optional
 authors = "alRex-U" #optional
 description = '''
     This enable us throw everything
