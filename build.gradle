@@ -34,7 +34,7 @@ def config = [ //https://mcforge.readthedocs.io/en/latest/conventions/versioning
                versionStatus: VersionStatus.beta
 ]
 
-version = "config.mc_version}-${config.major_mod}.${config.major_api}.${config.minor}.${config.patch}-${config.versionStatus.toString()}"
+version = "${config.mc_version}-${config.major_mod}.${config.major_api}.${config.minor}.${config.patch}-${config.versionStatus.toString()}"
 group = 'com.alrexu.throwability' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'throwability'
 
