@@ -1,23 +1,16 @@
 package com.alrexu.throwability;
 
-import com.alrexu.throwability.client.input.KeyBindings;
-import com.alrexu.throwability.client.input.KeyRecorder;
-import com.alrexu.throwability.common.capability.registry.CapabilityRegistry;
-import com.alrexu.throwability.common.event.EventAttachCapability;
-import com.alrexu.throwability.common.logic.processor.ThrowLogic;
 import com.alrexu.throwability.proxy.ClientProxy;
 import com.alrexu.throwability.proxy.CommonProxy;
 import com.alrexu.throwability.proxy.ServerProxy;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -46,12 +39,7 @@ public class ThrowabilityMod {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
-		MinecraftForge.EVENT_BUS.register(new ThrowLogic());
-		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(new EventAttachCapability());
-		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
-		FMLJavaModLoadingContext.get().getModEventBus().register(KeyBindings.class);
-		FMLJavaModLoadingContext.get().getModEventBus().register(new CapabilityRegistry());
+		PROXY.onCreated();
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
@@ -69,7 +57,4 @@ public class ThrowabilityMod {
 	private void processIMC(final InterModProcessEvent event) {
 	}
 
-	@SubscribeEvent
-	public void onServerStarting(FMLServerStartingEvent event) {
-	}
 }

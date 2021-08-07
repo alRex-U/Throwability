@@ -7,4 +7,6 @@ abstract public class CommonProxy {
 	public abstract void registerMessages(SimpleChannel instance);
 
 	public abstract void registerHandlers(IEventBus eventBus);
+
+	public abstract void onCreated();
 }
