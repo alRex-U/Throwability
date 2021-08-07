@@ -1,7 +1,6 @@
 package com.alrexu.throwability.proxy;
 
 import com.alrexu.throwability.client.hud.ThrowPowerMeter;
-import com.alrexu.throwability.client.renderer.HandCustomRenderer;
 import com.alrexu.throwability.common.network.ItemThrowMessage;
 import com.alrexu.throwability.common.network.handler.ItemThrowMessageHandler;
 import net.minecraftforge.api.distmarker.Dist;
@@ -24,7 +23,6 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
-		eventBus.register(new HandCustomRenderer());
 		eventBus.register(new ThrowPowerMeter());
 	}
 }
