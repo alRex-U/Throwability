@@ -7,7 +7,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
-	public static final KeyBinding keyBindThrow = new KeyBinding("key.throwability.throw", GLFW.GLFW_KEY_T, "key.categories.gameplay");
+	public static final KeyBinding keyBindThrow = new KeyBinding("key.throwability.throw", GLFW.GLFW_KEY_T, "key.categories.inventory");
 
 	public static KeyBinding getKeyThrow() {
 		return keyBindThrow;
