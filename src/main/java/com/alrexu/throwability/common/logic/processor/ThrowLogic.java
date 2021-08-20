@@ -11,6 +11,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
 public class ThrowLogic {
+	private int currentItem = 0;
+
 	@SubscribeEvent
 	public void onTick(TickEvent.PlayerTickEvent event) {
 		if (!event.player.isUser()) return;
@@ -21,13 +23,16 @@ public class ThrowLogic {
 		IThrow iThrow = ThrowProvider.get(player);
 		if (iThrow == null) return;
 
+		if (currentItem != player.inventory.currentItem) {
+			iThrow.cancel();
+			currentItem = player.inventory.currentItem;
+			return;
+		}
+
 		if (KeyRecorder.getStateThrow().isPressed() && player.collidedVertically) {
 			iThrow.chargeThrowPower();
 		} else if (KeyBindings.getKeyThrow().isKeyDown() && iThrow.isCharging()) {
 			iThrow.chargeThrowPower();
-		}
-		if (!player.collidedVertically) {
-			iThrow.cancel();
 		}
 
 		if (iThrow.isCharging() && !KeyBindings.getKeyThrow().isKeyDown()) {
