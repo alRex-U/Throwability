@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +47,8 @@ public class Throw {
 
 		ItemTossEvent event = new ItemTossEvent(itemEntity, player);
 		if (MinecraftForge.EVENT_BUS.post(event)) return;
+
+		player.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, throwStrength / 4, 1.0f);
 
 		if (!world.isRemote())
 			world.addEntity(itemEntity);
