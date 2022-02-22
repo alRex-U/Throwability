@@ -24,12 +24,12 @@ enum VersionStatus {
     }
 }
 def config = [ //https://mcforge.readthedocs.io/en/latest/conventions/versioning/
-               mc_version   : '1.17.1',//supported minimum Minecraft version
+               mc_version   : '1.18.1',//supported minimum Minecraft version
                major_mod    : '1',//Removing items, blocks, tile entities, etc.
                major_api    : '0',//Changing the order or variables of enums. etc
                minor        : '0',//Adding items, blocks, tile entities, etc.
                patch        : '0',//bugfix
-               forge_version: '1.17.1-37.1.1',
+               forge_version: '1.18.1-39.0.79',
                versionStatus: VersionStatus.release
 ]
 
@@ -37,7 +37,7 @@ version = "${config.mc_version}-${config.major_mod}.${config.major_api}.${config
 group = 'com.alrexu.throwability' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'throwability'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 compileJava.options.encoding("UTF-8")
 compileTestJava.options.encoding("UTF-8")
 
@@ -48,7 +48,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'official', version: '1.17.1'
+    mappings channel: 'official', version: '1.18.1'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
