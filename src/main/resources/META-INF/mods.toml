@@ -1,5 +1,5 @@
 modLoader = "javafml" #mandatory
-loaderVersion = "[32,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+loaderVersion = "[37,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 license = "GPL-3.0 License"
 issueTrackerURL = "https://github.com/alRex-U/Throwability/issues/" #optional
 [[mods]] #mandatory
@@ -16,12 +16,12 @@ description = '''
 [[dependencies.examplemod]] #optional
 modId = "forge" #mandatory
 mandatory = true #mandatory
-versionRange = "[32,)" #mandatory
+versionRange = "[37,)" #mandatory
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.examplemod]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.1,1.16.5)"
+versionRange = "[1.17.1,1.18)"
 ordering = "NONE"
 side = "BOTH"
