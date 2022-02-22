@@ -1,6 +1,6 @@
 package com.alrexu.throwability.client.input;
 
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -17,10 +17,10 @@ public class KeyRecorder {
 		record(KeyBindings.getKeyThrow(), keyThrow);
 	}
 
-	private static void record(KeyBinding keyBinding, KeyState state) {
-		state.pressed = (keyBinding.isKeyDown() && state.tickKeyDown == 0);
-		state.doubleTapped = (keyBinding.isKeyDown() && 0 < state.tickNotKeyDown && state.tickNotKeyDown <= 2);
-		if (keyBinding.isKeyDown()) {
+	private static void record(KeyMapping keyBinding, KeyState state) {
+		state.pressed = (keyBinding.isDown() && state.tickKeyDown == 0);
+		state.doubleTapped = (keyBinding.isDown() && 0 < state.tickNotKeyDown && state.tickNotKeyDown <= 2);
+		if (keyBinding.isDown()) {
 			state.tickKeyDown++;
 			state.tickNotKeyDown = 0;
 		} else {

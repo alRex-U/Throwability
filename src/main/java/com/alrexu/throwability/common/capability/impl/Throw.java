@@ -1,21 +1,21 @@
 package com.alrexu.throwability.common.capability.impl;
 
 import com.alrexu.throwability.common.capability.IThrow;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class Throw implements IThrow {
 	private int power = 0;
 	private boolean charging = false;
 
 	@Override
-	public void throwItem(PlayerEntity player, boolean all) {
+	public void throwItem(Player player, boolean all) {
 		charging = false;
 		com.alrexu.throwability.common.logic.player.Throw.throwItem(player, getStrength(), all);
 		power = 0;
 	}
 
 	@Override
-	public void throwItem(PlayerEntity player, boolean all, float strength) {
+	public void throwItem(Player player, boolean all, float strength) {
 		charging = false;
 		com.alrexu.throwability.common.logic.player.Throw.throwItem(player, strength, all);
 		power = 0;

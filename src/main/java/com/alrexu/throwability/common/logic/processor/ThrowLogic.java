@@ -5,7 +5,7 @@ import com.alrexu.throwability.client.input.KeyRecorder;
 import com.alrexu.throwability.common.capability.IThrow;
 import com.alrexu.throwability.common.capability.capabilities.ThrowProvider;
 import com.alrexu.throwability.common.network.ItemThrowMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -15,30 +15,30 @@ public class ThrowLogic {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.PlayerTickEvent event) {
-		if (!event.player.isUser()) return;
+		if (!event.player.isLocalPlayer()) return;
 		if (event.side != LogicalSide.CLIENT) return;
-		PlayerEntity player = event.player;
+		Player player = event.player;
 
 		if (event.phase != TickEvent.Phase.START) return;
 		IThrow iThrow = ThrowProvider.get(player);
 		if (iThrow == null) return;
 
-		if (currentItem != player.inventory.currentItem) {
+		if (currentItem != player.getInventory().selected) {
 			iThrow.cancel();
-			currentItem = player.inventory.currentItem;
+			currentItem = player.getInventory().selected;
 			return;
 		}
 
-		if (KeyRecorder.getStateThrow().isPressed() && player.collidedVertically) {
+		if (KeyRecorder.getStateThrow().isPressed() && player.isOnGround()) {
 			iThrow.chargeThrowPower();
-		} else if (KeyBindings.getKeyThrow().isKeyDown() && iThrow.isCharging()) {
+		} else if (KeyBindings.getKeyThrow().isDown() && iThrow.isCharging()) {
 			iThrow.chargeThrowPower();
 		}
 
-		if (iThrow.isCharging() && !KeyBindings.getKeyThrow().isKeyDown()) {
+		if (iThrow.isCharging() && !KeyBindings.getKeyThrow().isDown()) {
 			if (iThrow.getStrength() > 1) {
-				ItemThrowMessage.send(player, iThrow.getStrength(), player.isSneaking());
-				iThrow.throwItem(player, player.isSneaking());
+				ItemThrowMessage.send(player, iThrow.getStrength(), player.isShiftKeyDown());
+				iThrow.throwItem(player, player.isShiftKeyDown());
 			} else {
 				iThrow.cancel();
 			}

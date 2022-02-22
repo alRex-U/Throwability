@@ -1,15 +1,15 @@
 package com.alrexu.throwability.client.input;
 
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
-	public static final KeyBinding keyBindThrow = new KeyBinding("key.throwability.throw", GLFW.GLFW_KEY_U, "key.categories.inventory");
+	public static final KeyMapping keyBindThrow = new KeyMapping("key.throwability.throw", GLFW.GLFW_KEY_U, "key.categories.inventory");
 
-	public static KeyBinding getKeyThrow() {
+	public static KeyMapping getKeyThrow() {
 		return keyBindThrow;
 	}
 

@@ -3,7 +3,7 @@ package com.alrexu.throwability;
 import com.alrexu.throwability.proxy.ClientProxy;
 import com.alrexu.throwability.proxy.CommonProxy;
 import com.alrexu.throwability.proxy.ServerProxy;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -12,8 +12,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,7 +48,6 @@ public class ThrowabilityMod {
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
-		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {

@@ -2,11 +2,13 @@ package com.alrexu.throwability.common.capability.capabilities;
 
 import com.alrexu.throwability.ThrowabilityMod;
 import com.alrexu.throwability.common.capability.IThrow;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import com.alrexu.throwability.common.capability.impl.Throw;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -15,9 +17,9 @@ import javax.annotation.Nullable;
 
 public class ThrowProvider implements ICapabilityProvider {
 	public static final ResourceLocation CAPABILITY_LOCATION = new ResourceLocation(ThrowabilityMod.MOD_ID, "throw");
-	@CapabilityInject(IThrow.class)
-	public static final Capability<IThrow> THROW_CAPABILITY = null;
-	private LazyOptional<IThrow> instance = LazyOptional.of(THROW_CAPABILITY::getDefaultInstance);
+	public static final Capability<IThrow> THROW_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+	});
+	private LazyOptional<IThrow> instance = LazyOptional.of(Throw::new);
 
 	@Nullable
 	public static IThrow get(Entity entity) {
