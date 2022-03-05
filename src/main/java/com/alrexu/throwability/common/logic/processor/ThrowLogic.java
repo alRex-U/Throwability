@@ -5,6 +5,7 @@ import com.alrexu.throwability.client.input.KeyRecorder;
 import com.alrexu.throwability.common.capability.IThrow;
 import com.alrexu.throwability.common.capability.capabilities.ThrowProvider;
 import com.alrexu.throwability.common.network.ItemThrowMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,7 +24,7 @@ public class ThrowLogic {
 		IThrow iThrow = ThrowProvider.get(player);
 		if (iThrow == null) return;
 
-		if (currentItem != player.getInventory().selected) {
+		if (currentItem != player.getInventory().selected || Minecraft.getInstance().screen != null) {
 			iThrow.cancel();
 			currentItem = player.getInventory().selected;
 			return;
