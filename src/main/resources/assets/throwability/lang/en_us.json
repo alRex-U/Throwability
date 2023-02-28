@@ -1,3 +1,5 @@
 {
-  "key.throwability.throw": "Throw"
+  "key.throwability.throw": "Throw",
+  "key.throwability.modifier.all": "Modifier Throw All",
+  "key.throwability.modifier.special": "Modifier Throw As Specific Entity"
 }

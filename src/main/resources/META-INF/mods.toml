@@ -11,15 +11,16 @@ displayURL = "https://www.curseforge.com/minecraft/mc-mods/throwability" #option
 credits = "Thanks for Java, and Developers of Minecraft and Minecraft Forge" #optional
 authors = "alRex-U" #optional
 description = '''
-    This enable us throw everything
+    This mod enable players to throw every items.
+    Let's throw a TNT to your friends!
 '''
-[[dependencies.examplemod]] #optional
+[[dependencies.throwability]] #optional
 modId = "forge" #mandatory
 mandatory = true #mandatory
 versionRange = "[32,)" #mandatory
 ordering = "NONE"
 side = "BOTH"
-[[dependencies.examplemod]]
+[[dependencies.throwability]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.16.1,1.16.5)"
