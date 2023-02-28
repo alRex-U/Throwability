@@ -2,9 +2,8 @@ package com.alrex.throwability.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
@@ -25,9 +24,9 @@ public class KeyBindings {
 	}
 
 	@SubscribeEvent
-	public static void register(FMLClientSetupEvent event) {
-		ClientRegistry.registerKeyBinding(keyBindThrow);
-		ClientRegistry.registerKeyBinding(keyBindAllModifier);
-		ClientRegistry.registerKeyBinding(keyBindSpecialModifier);
+	public static void register(RegisterKeyMappingsEvent event) {
+		event.register(keyBindThrow);
+		event.register(keyBindAllModifier);
+		event.register(keyBindSpecialModifier);
 	}
 }
