@@ -41,6 +41,7 @@ public class ItemThrowMessage {
 		return message;
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static void handleClient(ItemThrowMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
 			PlayerEntity player;

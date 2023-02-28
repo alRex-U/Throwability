@@ -37,6 +37,7 @@ public class SyncThrowStateMessage {
 		return message;
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static void handleClient(SyncThrowStateMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
 			PlayerEntity player;
