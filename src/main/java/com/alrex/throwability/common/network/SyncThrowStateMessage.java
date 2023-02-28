@@ -3,14 +3,14 @@ package com.alrex.throwability.common.network;
 import com.alrex.throwability.Throwability;
 import com.alrex.throwability.common.capability.IThrow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ public class SyncThrowStateMessage {
 	public boolean isCharging = false;
 
 	@OnlyIn(Dist.CLIENT)
-	public static void send(PlayerEntity player, IThrow iThrow) {
+	public static void send(Player player, IThrow iThrow) {
 		SyncThrowStateMessage message = new SyncThrowStateMessage();
 		message.throwStrength = iThrow.getChargingPower();
 		message.senderID = player.getUUID();
@@ -29,7 +29,7 @@ public class SyncThrowStateMessage {
 		Throwability.CHANNEL.send(PacketDistributor.SERVER.noArg(), message);
 	}
 
-	public static SyncThrowStateMessage decode(PacketBuffer packet) {
+	public static SyncThrowStateMessage decode(FriendlyByteBuf packet) {
 		SyncThrowStateMessage message = new SyncThrowStateMessage();
 		message.throwStrength = packet.readFloat();
 		message.senderID = new UUID(packet.readLong(), packet.readLong());
@@ -37,16 +37,18 @@ public class SyncThrowStateMessage {
 		return message;
 	}
 
+	@OnlyIn(Dist.CLIENT)
 	public static void handleClient(SyncThrowStateMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
-			PlayerEntity player;
+			Player player;
 			if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-				World world = Minecraft.getInstance().level;
+				Level world = Minecraft.getInstance().level;
 				if (world == null) return;
 				player = world.getPlayerByUUID(message.senderID);
 				if (player == Minecraft.getInstance().player) return;
 			} else {
 				player = contextSupplier.get().getSender();
+				Throwability.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
 			}
 			if (player == null) return;
 			IThrow iThrow = IThrow.get(player);
@@ -60,7 +62,7 @@ public class SyncThrowStateMessage {
 	@OnlyIn(Dist.DEDICATED_SERVER)
 	public static void handleServer(SyncThrowStateMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
-			PlayerEntity player = contextSupplier.get().getSender();
+			Player player = contextSupplier.get().getSender();
 			if (player == null) return;
 
 			IThrow iThrow = IThrow.get(player);
@@ -71,7 +73,7 @@ public class SyncThrowStateMessage {
 		contextSupplier.get().setPacketHandled(true);
 	}
 
-	public void encode(PacketBuffer packet) {
+	public void encode(FriendlyByteBuf packet) {
 		packet.writeFloat(throwStrength);
 		packet.writeLong(senderID.getLeastSignificantBits());
 		packet.writeLong(senderID.getMostSignificantBits());

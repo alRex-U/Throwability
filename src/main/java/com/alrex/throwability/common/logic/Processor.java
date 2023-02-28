@@ -6,7 +6,7 @@ import com.alrex.throwability.common.capability.IThrow;
 import com.alrex.throwability.common.capability.ThrowType;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -18,7 +18,7 @@ public class Processor {
 	@SubscribeEvent
 	public void onTick(TickEvent.PlayerTickEvent event) {
 		if (event.side != LogicalSide.CLIENT) return;
-		PlayerEntity player = event.player;
+		Player player = event.player;
 
 		if (event.phase != TickEvent.Phase.START) return;
 		IThrow iThrow = IThrow.get(player);
@@ -27,9 +27,9 @@ public class Processor {
 		oldCharging = iThrow.isCharging();
 		if (!event.player.isLocalPlayer()) return;
 
-		if (currentItem != player.inventory.selected || Minecraft.getInstance().screen != null) {
+		if (currentItem != player.getInventory().selected || Minecraft.getInstance().screen != null) {
 			iThrow.cancel();
-			currentItem = player.inventory.selected;
+			currentItem = player.getInventory().selected;
 			return;
 		}
 
@@ -49,7 +49,7 @@ public class Processor {
 				} else {
 					type = ThrowType.One_As_Item;
 				}
-				iThrow.throwItem(player.inventory.selected, type, iThrow.getChargingPower());
+				iThrow.throwItem(player.getInventory().selected, type, iThrow.getChargingPower());
 			} else {
 				iThrow.cancel();
 			}

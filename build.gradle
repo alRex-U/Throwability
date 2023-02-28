@@ -26,7 +26,7 @@ version = "${mc_version}-${major_mod}.${major_api}.${minor}.${patch}-${versionSt
 group = 'com.alrex.throwability' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Throwability'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {

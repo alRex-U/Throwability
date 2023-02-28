@@ -1,5 +1,6 @@
 {
   "key.throwability.throw": "投げる",
   "key.throwability.modifier.all": "追加入力：全部投げ",
-  "key.throwability.modifier.special": "追加入力：特定のエンティティとして投げる"
+  "key.throwability.modifier.special": "追加入力：特定のエンティティとして投げる",
+  "key.categories.throwability": "Throwability"
 }

@@ -3,32 +3,32 @@ package com.alrex.throwability.common.event;
 import com.alrex.throwability.common.capability.Capabilities;
 import com.alrex.throwability.common.capability.IThrow;
 import com.alrex.throwability.common.capability.impl.Throw;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 
 public class EventAttachCapability {
 	@SubscribeEvent
 	public void attach(AttachCapabilitiesEvent<Entity> event) {
-		if (!(event.getObject() instanceof PlayerEntity)) return;
+		if (!(event.getObject() instanceof Player)) return;
 		{
-			PlayerEntity player = (PlayerEntity) event.getObject();
+			Player player = (Player) event.getObject();
 			IThrow instance = new Throw(player);
 
 			LazyOptional<IThrow> optional = LazyOptional.of(() -> instance);
 			ICapabilityProvider provider = new ICapabilityProvider() {
-				@Nonnull
+				@NotNull
 				@Override
-				public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+				public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
 					if (cap == Capabilities.THROW_CAPABILITY) {
 						return optional.cast();
 					}

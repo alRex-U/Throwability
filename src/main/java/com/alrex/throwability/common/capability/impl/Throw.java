@@ -4,15 +4,15 @@ import com.alrex.throwability.common.capability.IThrow;
 import com.alrex.throwability.common.capability.ThrowType;
 import com.alrex.throwability.common.network.ItemThrowMessage;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 
@@ -20,12 +20,12 @@ import javax.annotation.Nullable;
 
 public class Throw implements IThrow {
 	@Nullable
-	final PlayerEntity player;
+	final Player player;
 	private float power = 0;
 	private float oldPower = 0;
 	private boolean charging = false;
 
-	public Throw(PlayerEntity player) {
+	public Throw(Player player) {
 		this.player = player;
 	}
 
@@ -78,26 +78,26 @@ public class Throw implements IThrow {
 	@Override
 	public void throwItem(int inventoryIndex, ThrowType type, float strength) {
 		if (player == null) return;
-		ItemStack stack = player.inventory.getItem(inventoryIndex);
+		ItemStack stack = player.getInventory().getItem(inventoryIndex);
 		Entity entity;
 		if (type == ThrowType.One_As_Entity || type == ThrowType.One_As_Item) {
 			stack = stack.split(1);
 		} else {
-			player.inventory.removeItem(stack);
+			player.getInventory().removeItem(stack);
 		}
 		if (player.isLocalPlayer()) {
 			ItemThrowMessage.send(player, inventoryIndex, strength, type);
 			player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, strength, 1.0f);
 			cancel();
 		}
-		player.swing(Hand.MAIN_HAND);
+		player.swing(InteractionHand.MAIN_HAND);
 		if (player.level.isClientSide()) return;
 		if (type == ThrowType.One_As_Entity) {
 			entity = ThrowUtil.getThrownEntityOf(
 					player,
 					stack,
 					player.level,
-					player.position().add(0, player.getEyeHeight() - 0.3, 0),
+					player.getEyePosition().add(0, -0.3, 0),
 					player.getLookAngle()
 			);
 		} else {
@@ -108,24 +108,23 @@ public class Throw implements IThrow {
 							.add(0, player.getEyeHeight() - 0.3, 0)
 			);
 		}
-		if (entity instanceof ItemEntity) {
-			ItemEntity itemEntity = (ItemEntity) entity;
+		if (entity instanceof ItemEntity itemEntity) {
 			itemEntity.setPickUpDelay(20);
 			itemEntity.setThrower(player.getUUID());
 			ItemTossEvent event = new ItemTossEvent(itemEntity, player);
 			if (MinecraftForge.EVENT_BUS.post(event)) return;
 		}
-		if (entity instanceof FallingBlockEntity || entity instanceof TNTEntity) {
+		if (entity instanceof FallingBlockEntity || entity instanceof PrimedTnt) {
 			strength *= 2.2f;
 		} else if (entity instanceof ItemEntity) {
 			strength *= 4;
 		} else {
 			strength *= 3;
 		}
-		float pitchSin = MathHelper.sin(player.xRot * ((float) Math.PI / 180F));
-		float pitchCos = MathHelper.cos(player.xRot * ((float) Math.PI / 180F));
-		float yawSin = MathHelper.sin(player.yRot * ((float) Math.PI / 180F));
-		float yawCos = MathHelper.cos(player.yRot * ((float) Math.PI / 180F));
+		float pitchSin = Mth.sin(player.getXRot() * ((float) Math.PI / 180F));
+		float pitchCos = Mth.cos(player.getXRot() * ((float) Math.PI / 180F));
+		float yawSin = Mth.sin(player.getYRot() * ((float) Math.PI / 180F));
+		float yawCos = Mth.cos(player.getYRot() * ((float) Math.PI / 180F));
 		float random = player.getRandom().nextFloat() * ((float) Math.PI * 2F);
 		float random2 = 0.02F * player.getRandom().nextFloat();
 		entity.setDeltaMovement(

@@ -1,33 +1,34 @@
 package com.alrex.throwability.utils;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.item.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import com.alrex.throwability.shrewd.FallingBlockEntitySub;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class ThrowUtil {
-	public static ItemEntity getItemEntity(ItemStack stack, World world, Vector3d pos) {
+	public static ItemEntity getItemEntity(ItemStack stack, Level world, Vec3 pos) {
 		return new ItemEntity(
 				world, pos.x(), pos.y(), pos.z(), stack
 		);
 	}
 
-	public static Entity getThrownEntityOf(PlayerEntity thrower, ItemStack stack, World world, Vector3d pos, Vector3d projectileAngle) {
+	public static Entity getThrownEntityOf(Player thrower, ItemStack stack, Level world, Vec3 pos, Vec3 projectileAngle) {
 		Item item = stack.getItem();
 		if (item instanceof FireChargeItem) {
-			SmallFireballEntity entity = new SmallFireballEntity(
+			SmallFireball entity = new SmallFireball(
 					world, thrower, projectileAngle.x(), projectileAngle.y(), projectileAngle.z()
 			);
 			entity.setPos(pos.x(), pos.y(), pos.z());
 			return entity;
 		}
 
-		if (item instanceof ArrowItem) {
-			ArrowItem arrowItem = (ArrowItem) item;
-			AbstractArrowEntity arrow = arrowItem.createArrow(world, stack, thrower);
+		if (item instanceof ArrowItem arrowItem) {
+			AbstractArrow arrow = arrowItem.createArrow(world, stack, thrower);
 			arrow.setPos(pos.x(), pos.y(), pos.z());
 			return arrow;
 		}
@@ -40,53 +41,52 @@ public class ThrowUtil {
 			rocketEntity.setPos(pos.x(), pos.y(), pos.z());
 			return rocketEntity;
 		}
-		if (item instanceof EnderPearlItem) {
-			EnderPearlEntity pearlEntity = new EnderPearlEntity(
+		if (item instanceof EnderpearlItem) {
+			ThrownEnderpearl pearlEntity = new ThrownEnderpearl(
 					world, thrower
 			);
 			pearlEntity.setPos(pos.x(), pos.y(), pos.z());
 			return pearlEntity;
 		}
 		if (item instanceof SnowballItem) {
-			return new SnowballEntity(
+			return new Snowball(
 					world, pos.x(), pos.y(), pos.z()
 			);
 		}
 		if (item instanceof EggItem) {
-			return new EggEntity(
+			return new ThrownEgg(
 					world, pos.x(), pos.y(), pos.z()
 			);
 		}
 		if (item instanceof ExperienceBottleItem) {
-			return new ExperienceBottleEntity(
+			return new ThrownExperienceBottle(
 					world, pos.x(), pos.y(), pos.z()
 			);
 		}
 		if (item instanceof ThrowablePotionItem) {
-			PotionEntity potionentity = new PotionEntity(world, thrower);
-			potionentity.setItem(stack);
-			potionentity.setPos(pos.x(), pos.y(), pos.z());
-			return potionentity;
+			ThrownPotion potionEntity = new ThrownPotion(world, thrower);
+			potionEntity.setItem(stack);
+			potionEntity.setPos(pos.x(), pos.y(), pos.z());
+			return potionEntity;
 		}
 		if (item == Items.TNT) {
-			TNTEntity entity = new TNTEntity(
+			PrimedTnt entity = new PrimedTnt(
 					world, pos.x(), pos.y(), pos.z(), thrower
 			);
 			entity.setRemainingFireTicks(30);
 			return entity;
 		}
 		if (item instanceof TridentItem) {
-			return new TridentEntity(
-					world, pos.x(), pos.y(), pos.z()
+			var trident = new ThrownTrident(
+					world, thrower, stack
 			);
+			trident.setPos(pos);
+			return trident;
 		}
-		if (item instanceof BlockItem) {
-			BlockItem blockItem = (BlockItem) item;
-			FallingBlockEntity entity = new FallingBlockEntity(
-					world, pos.x(), pos.y(), pos.z(), blockItem.getBlock().defaultBlockState()
+		if (item instanceof BlockItem blockItem) {
+			return FallingBlockEntitySub.construct(
+					world, blockItem.getBlock().defaultBlockState(), pos
 			);
-			entity.time = 1;
-			return entity;
 		}
 		ItemEntity itemEntity = new ItemEntity(
 				world, pos.x(), pos.y(), pos.z(), stack

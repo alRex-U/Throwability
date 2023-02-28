@@ -1,12 +1,12 @@
 package com.alrex.throwability.common.capability;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
 public interface IThrow {
 	@Nullable
-	public static IThrow get(PlayerEntity player) {
+	public static IThrow get(Player player) {
 		return player.getCapability(Capabilities.THROW_CAPABILITY).orElse(null);
 	}
 
