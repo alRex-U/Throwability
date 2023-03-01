@@ -33,7 +33,7 @@ public class Processor {
 			return;
 		}
 
-		if (KeyRecorder.getStateThrow().isPressed() && player.isOnGround()) {
+		if (KeyRecorder.getStateThrow().isPressed()) {
 			iThrow.chargeThrowPower();
 		} else if (KeyBindings.getKeyThrow().isDown() && iThrow.isCharging()) {
 			iThrow.chargeThrowPower();
