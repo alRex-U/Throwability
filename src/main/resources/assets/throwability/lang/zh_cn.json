@@ -1,3 +1,6 @@
 {
-  "key.throwability.throw": "投掷"
+  "key.throwability.throw": "投掷",
+  "key.throwability.modifier.all": "调整为投掷一组",
+  "key.throwability.modifier.special": "调整为作为独特实体投掷",
+  "key.categories.throwability": "投掷能力（Throwability）"
 }
