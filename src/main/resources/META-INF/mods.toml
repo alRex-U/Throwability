@@ -1,14 +1,13 @@
 modLoader = "javafml" #mandatory
-loaderVersion = "[32,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
-license = "GPL-3.0 License"
+loaderVersion = "${loader_version_range}" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+license = "${mod_license}"
 issueTrackerURL = "https://github.com/alRex-U/Throwability/issues/" #optional
 [[mods]] #mandatory
 modId = "throwability" #mandatory
-version = "${file.jarVersion}" #mandatory
+version = "${mod_version}" #mandatory
 displayName = "Throwability" #mandatory
 updateJSONURL = "https://www.curseforge.com/minecraft/mc-mods/throwability" #optional
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/throwability" #optional
-credits = "Thanks for Java, and Developers of Minecraft and Minecraft Forge" #optional
 authors = "alRex-U" #optional
 description = '''
     This mod enable players to throw every items.
@@ -17,12 +16,12 @@ description = '''
 [[dependencies.throwability]] #optional
 modId = "forge" #mandatory
 mandatory = true #mandatory
-versionRange = "[32,)" #mandatory
+versionRange = "${forge_version_range}" #mandatory
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.throwability]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.5,1.17)"
+versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"

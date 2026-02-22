@@ -1,23 +1,14 @@
 package com.alrex.throwability.client.animation;
 
-import com.alrex.throwability.common.capability.IThrow;
-import com.alrex.throwability.utils.MathUtil;
-import com.alrex.throwability.utils.VectorUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.HandSide;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-
 public class ThrowabilityAnimation {
+	/*
 	public static void animatePost(
 			PlayerEntity player,
-			IThrow iThrow,
+			LocalThrowingAbility throwingAbility,
 			PlayerModelTransformer transformer
 	) {
-		if (!iThrow.isCharging()) return;
-		float phase = MathUtil.lerp(iThrow.getOldPower(), iThrow.getChargingPower(), transformer.getPartialTick()) / iThrow.getMaxPower();
+		if (!throwingAbility.isCharging()) return;
+		float phase = MathHelper.clamp(throwingAbility.getChargingTick()+transformer.getPartialTick()/throwingAbility.getMaxChargeTick(),0,1);
 		float factor = 1 - MathUtil.squaring(1 - phase);
 		if (player.getMainArm() == HandSide.RIGHT) {
 			transformer
@@ -49,6 +40,9 @@ public class ThrowabilityAnimation {
 					);
 		}
 	}
+	public static void rotate(){
+
+	}
 
 	@SubscribeEvent
 	public static void onRenderTick(TickEvent.RenderTickEvent event) {
@@ -65,4 +59,6 @@ public class ThrowabilityAnimation {
 			}
 		}
 	}
+
+	 */
 }

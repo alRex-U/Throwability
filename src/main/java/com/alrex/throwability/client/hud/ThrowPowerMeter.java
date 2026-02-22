@@ -1,6 +1,7 @@
 package com.alrex.throwability.client.hud;
 
-import com.alrex.throwability.common.capability.IThrow;
+import com.alrex.throwability.common.ability.AbstractThrowingAbility;
+import com.alrex.throwability.common.ability.IThrowabilityProvider;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MainWindow;
@@ -19,24 +20,25 @@ public class ThrowPowerMeter extends AbstractGui {
 		Minecraft mc = Minecraft.getInstance();
 		PlayerEntity player = mc.player;
 		if (player == null || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE) return;
-		IThrow iThrow = IThrow.get(player);
-		if (iThrow == null || !iThrow.isCharging())
-			return;
+        if (!(player instanceof IThrowabilityProvider)) return;
+        AbstractThrowingAbility throwingAbility = ((IThrowabilityProvider) player).getThrowAbility();
+        if (!throwingAbility.isCharging()) return;
+
 		event.setCanceled(true);
 
 		RenderSystem.disableBlend();
 
-		renderMeter(event.getMatrixStack(), iThrow);
+        renderMeter(event.getMatrixStack(), throwingAbility);
 
 		RenderSystem.enableBlend();
 	}
 
-	private void renderMeter(MatrixStack stack, IThrow iThrow) {
+    private void renderMeter(MatrixStack stack, AbstractThrowingAbility throwingAbility) {
 		Minecraft mc = Minecraft.getInstance();
 		mc.getTextureManager().bind(AbstractGui.GUI_ICONS_LOCATION);
 
 		int max = 182;
-		int size = (int) ((float) iThrow.getChargingPower() * max / iThrow.getMaxPower());
+        int size = (int) ((float) throwingAbility.getChargingTick() * max / throwingAbility.getMaxChargingTick());
 		MainWindow window = mc.getWindow();
 		int height = window.getGuiScaledHeight() - 29;
 		int x = window.getGuiScaledWidth() / 2 - 91;

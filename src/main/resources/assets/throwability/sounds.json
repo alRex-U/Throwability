@@ -1,0 +1,42 @@
+{
+  "throwability.throw": {
+    "subtitle": "throwability.subtitle.throw",
+    "sounds": [
+      {
+        "name": "entity/player/attack/sweep1",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep2",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep3",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep4",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep5",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep6",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep7",
+        "volume": 0.6,
+        "pitch": 0.7
+      }
+    ]
+  }
+}

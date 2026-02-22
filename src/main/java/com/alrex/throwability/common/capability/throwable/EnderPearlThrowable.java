@@ -1,0 +1,34 @@
+package com.alrex.throwability.common.capability.throwable;
+
+import com.alrex.throwability.common.capability.IThrowable;
+import com.alrex.throwability.utils.ThrowUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EnderPearlEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.EnderPearlItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
+
+public class EnderPearlThrowable implements IThrowable {
+    @Override
+    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+        Item item = stack.getItem();
+        if (item instanceof EnderPearlItem) {
+            EnderPearlEntity entity = new EnderPearlEntity(
+                    thrower.level, thrower
+            );
+
+            Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
+            Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+
+            entity.setPos(pos.x(), pos.y() + thrower.getEyeHeight() - 0.3, pos.z());
+            entity.setDeltaMovement(throwVec.scale(speedScale));
+
+            return entity;
+        }
+        return throwAsItem(thrower, stack, chargedTick);
+    }
+}

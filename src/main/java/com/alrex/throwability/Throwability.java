@@ -1,10 +1,14 @@
 package com.alrex.throwability;
 
+import com.alrex.throwability.client.animation.Animations;
+import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
+import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.proxy.ClientProxy;
 import com.alrex.throwability.proxy.CommonProxy;
 import com.alrex.throwability.proxy.ServerProxy;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -34,11 +38,13 @@ public class Throwability {
 	);
 
 	public Throwability() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+		IEventBus fmlEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		fmlEventBus.addListener(this::setup);
+		fmlEventBus.addListener(this::enqueueIMC);
+		fmlEventBus.addListener(this::processIMC);
+		fmlEventBus.addListener(this::doClientStuff);
 
+		SoundEvents.register(fmlEventBus);
 		PROXY.onCreated();
 	}
 
@@ -48,6 +54,7 @@ public class Throwability {
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
+		Animations.register(ThrowingAnimation.class, ThrowingAnimation::new);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {

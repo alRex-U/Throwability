@@ -6,9 +6,13 @@
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.8",
   "client": [
-    "client.PlayerModelMixin"
+    "client.AbstractClientPlayerEntityMixin",
+    "client.PlayerModelMixin",
+    "client.PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+  ]
 }

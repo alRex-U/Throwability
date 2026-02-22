@@ -1,14 +1,63 @@
 package com.alrex.throwability.utils;
 
+import com.alrex.throwability.common.ability.ThrowType;
+import com.alrex.throwability.common.capability.IThrowable;
+import com.alrex.throwability.common.network.ItemThrowMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.item.*;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class ThrowUtil {
+	public static void throwItem(PlayerEntity player, int inventoryIndex, ItemStack selectedItem, IThrowable itemThrowable, ThrowType type, int chargingTick) {
+		if (type == ThrowType.ONE_AS_ENTITY || type == ThrowType.ONE_AS_ITEM) {
+			selectedItem = selectedItem.split(1);
+		} else {
+			player.inventory.removeItem(selectedItem);
+		}
+		if (player.isLocalPlayer()) {
+			ItemThrowMessage.send(player, inventoryIndex, chargingTick, type);
+		}
+		player.swing(Hand.MAIN_HAND);
+		if (player.level.isClientSide()) {
+			itemThrowable.onThrownOnClient(player, selectedItem);
+		} else {
+			Entity entity;
+			if (type == ThrowType.ONE_AS_ENTITY) {
+				entity = itemThrowable.throwAsEntity(player, selectedItem, chargingTick);
+			} else {
+				ItemEntity itemEntity = itemThrowable.throwAsItem(player, selectedItem, chargingTick);
+				itemEntity.setThrower(player.getUUID());
+				entity = itemEntity;
+			}
+			player.level.addFreshEntity(entity);
+		}
+	}
+
+	public static Vector3d getBasicThrowingPosition(PlayerEntity thrower) {
+		Vector3d pos = thrower.position();
+		return new Vector3d(pos.x, pos.y + thrower.getEyeHeight() * 0.833, pos.z);
+	}
+
+	public static Vector3d getBasicThrowingVector(PlayerEntity thrower) {
+		float pitchSin = MathHelper.sin(thrower.xRot * ((float) Math.PI / 180F));
+		float pitchCos = MathHelper.cos(thrower.xRot * ((float) Math.PI / 180F));
+		float yawSin = MathHelper.sin(thrower.yRot * ((float) Math.PI / 180F));
+		float yawCos = MathHelper.cos(thrower.yRot * ((float) Math.PI / 180F));
+		float random = thrower.getRandom().nextFloat() * ((float) Math.PI * 2F);
+		float random2 = 0.02F * thrower.getRandom().nextFloat();
+		return new Vector3d(
+				(-yawSin * pitchCos * 0.3F) + 0.5f * Math.cos(random) * (double) random2,
+				(-pitchSin * 0.3F + 0.05 + (thrower.getRandom().nextFloat() - thrower.getRandom().nextFloat()) * 0.05F),
+				(yawCos * pitchCos * 0.3F) + 0.5f * Math.sin(random) * (double) random2
+		);
+	}
+
 	public static ItemEntity getItemEntity(ItemStack stack, World world, Vector3d pos) {
 		return new ItemEntity(
 				world, pos.x(), pos.y(), pos.z(), stack

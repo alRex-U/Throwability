@@ -1,7 +1,9 @@
 package com.alrex.throwability.common.network;
 
 import com.alrex.throwability.Throwability;
-import com.alrex.throwability.common.capability.IThrow;
+import com.alrex.throwability.common.ability.AbstractThrowingAbility;
+import com.alrex.throwability.common.ability.IThrowabilityProvider;
+import com.alrex.throwability.common.ability.RemoteThrowingAbility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -16,46 +18,47 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SyncThrowStateMessage {
-	public UUID senderID = null;
-	public float throwStrength = 0;
-	public boolean isCharging = false;
+	private UUID senderID = null;
+	private RemoteThrowingAbility.SyncedData data;
 
 	@OnlyIn(Dist.CLIENT)
-	public static void send(PlayerEntity player, IThrow iThrow) {
+	public static void send(PlayerEntity player, RemoteThrowingAbility.SyncedData syncedData) {
 		SyncThrowStateMessage message = new SyncThrowStateMessage();
-		message.throwStrength = iThrow.getChargingPower();
 		message.senderID = player.getUUID();
-		message.isCharging = iThrow.isCharging();
+		message.data = syncedData;
 		Throwability.CHANNEL.send(PacketDistributor.SERVER.noArg(), message);
 	}
 
 	public static SyncThrowStateMessage decode(PacketBuffer packet) {
 		SyncThrowStateMessage message = new SyncThrowStateMessage();
-		message.throwStrength = packet.readFloat();
 		message.senderID = new UUID(packet.readLong(), packet.readLong());
-		message.isCharging = packet.readBoolean();
+		message.data = RemoteThrowingAbility.SyncedData.read(packet);
 		return message;
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	public static void handleClient(SyncThrowStateMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
-			PlayerEntity player;
 			if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
 				World world = Minecraft.getInstance().level;
 				if (world == null) return;
-				player = world.getPlayerByUUID(message.senderID);
-				if (player == Minecraft.getInstance().player) return;
+				PlayerEntity player = world.getPlayerByUUID(message.senderID);
+				if (!(player instanceof IThrowabilityProvider)) return;
+				AbstractThrowingAbility throwingAbility = ((IThrowabilityProvider) player).getThrowAbility();
+				if (!(throwingAbility instanceof RemoteThrowingAbility)) return;
+				RemoteThrowingAbility remoteThrowingAbility = (RemoteThrowingAbility) throwingAbility;
+				message.data.apply(remoteThrowingAbility);
 			} else {
-				player = contextSupplier.get().getSender();
+				Throwability.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
 			}
-			if (player == null) return;
-			IThrow iThrow = IThrow.get(player);
-			if (iThrow == null) return;
-			iThrow.setPower(message.throwStrength);
-			iThrow.setCharging(message.isCharging);
 		});
 		contextSupplier.get().setPacketHandled(true);
+	}
+
+	public void encode(PacketBuffer packet) {
+		packet.writeLong(senderID.getLeastSignificantBits());
+		packet.writeLong(senderID.getMostSignificantBits());
+		data.write(packet);
 	}
 
 	@OnlyIn(Dist.DEDICATED_SERVER)
@@ -63,19 +66,8 @@ public class SyncThrowStateMessage {
 		contextSupplier.get().enqueueWork(() -> {
 			PlayerEntity player = contextSupplier.get().getSender();
 			if (player == null) return;
-
-			IThrow iThrow = IThrow.get(player);
-			if (iThrow == null) return;
-			iThrow.setPower(message.throwStrength);
 			Throwability.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
 		});
 		contextSupplier.get().setPacketHandled(true);
-	}
-
-	public void encode(PacketBuffer packet) {
-		packet.writeFloat(throwStrength);
-		packet.writeLong(senderID.getLeastSignificantBits());
-		packet.writeLong(senderID.getMostSignificantBits());
-		packet.writeBoolean(isCharging);
 	}
 }

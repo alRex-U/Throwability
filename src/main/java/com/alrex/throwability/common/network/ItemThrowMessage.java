@@ -1,10 +1,14 @@
 package com.alrex.throwability.common.network;
 
 import com.alrex.throwability.Throwability;
-import com.alrex.throwability.common.capability.IThrow;
-import com.alrex.throwability.common.capability.ThrowType;
+import com.alrex.throwability.common.ability.ThrowType;
+import com.alrex.throwability.common.capability.Capabilities;
+import com.alrex.throwability.common.capability.IThrowable;
+import com.alrex.throwability.common.capability.throwable.StandardThrowable;
+import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,15 +22,15 @@ import java.util.function.Supplier;
 
 public class ItemThrowMessage {
 	public UUID senderID = null;
-	public float throwStrength = 0;
+	public int chargingTick = 0;
 	public int itemIndex = 0;
 	public ThrowType type;
 
 	@OnlyIn(Dist.CLIENT)
-	public static void send(PlayerEntity player, int itemIndex, float strength, ThrowType type) {
+	public static void send(PlayerEntity player, int itemIndex, int chargingTick, ThrowType type) {
 		ItemThrowMessage message = new ItemThrowMessage();
-		message.throwStrength = strength;
 		message.senderID = player.getUUID();
+		message.chargingTick = chargingTick;
 		message.type = type;
 		message.itemIndex = itemIndex;
 		Throwability.CHANNEL.send(PacketDistributor.SERVER.noArg(), message);
@@ -34,9 +38,9 @@ public class ItemThrowMessage {
 
 	public static ItemThrowMessage decode(PacketBuffer packet) {
 		ItemThrowMessage message = new ItemThrowMessage();
-		message.throwStrength = packet.readFloat();
 		message.senderID = new UUID(packet.readLong(), packet.readLong());
-		message.type = ThrowType.fromCode(packet.readByte());
+		message.chargingTick = packet.readInt();
+		message.type = ThrowType.values()[packet.readByte() % ThrowType.values().length];
 		message.itemIndex = packet.readInt();
 		return message;
 	}
@@ -54,10 +58,10 @@ public class ItemThrowMessage {
 				player = contextSupplier.get().getSender();
 			}
 			if (player == null) return;
-			IThrow iThrow = IThrow.get(player);
-			if (iThrow == null) return;
-
-			iThrow.throwItem(message.itemIndex, message.type, message.throwStrength);
+			ItemStack stack = player.inventory.getItem(message.itemIndex);
+			if (stack.isEmpty()) return;
+			IThrowable throwable = stack.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
+			ThrowUtil.throwItem(player, message.itemIndex, stack, throwable, message.type, message.chargingTick);
 		});
 		contextSupplier.get().setPacketHandled(true);
 	}
@@ -67,19 +71,19 @@ public class ItemThrowMessage {
 		contextSupplier.get().enqueueWork(() -> {
 			PlayerEntity player = contextSupplier.get().getSender();
 			if (player == null) return;
-
-			IThrow iThrow = IThrow.get(player);
-			if (iThrow == null) return;
-			iThrow.throwItem(message.itemIndex, message.type, message.throwStrength);
+			ItemStack stack = player.inventory.getItem(message.itemIndex);
+			if (stack.isEmpty()) return;
+			IThrowable throwable = stack.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
+			ThrowUtil.throwItem(player, message.itemIndex, stack, throwable, message.type, message.chargingTick);
 		});
 		contextSupplier.get().setPacketHandled(true);
 	}
 
 	public void encode(PacketBuffer packet) {
-		packet.writeFloat(throwStrength);
 		packet.writeLong(senderID.getLeastSignificantBits());
 		packet.writeLong(senderID.getMostSignificantBits());
-		packet.writeByte(type.getCode());
+		packet.writeInt(chargingTick);
+		packet.writeByte(type.ordinal());
 		packet.writeInt(itemIndex);
 	}
 }

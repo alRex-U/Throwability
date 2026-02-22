@@ -5,7 +5,6 @@ import com.alrex.throwability.client.hud.ThrowPowerMeter;
 import com.alrex.throwability.client.input.KeyBindings;
 import com.alrex.throwability.client.input.KeyRecorder;
 import com.alrex.throwability.common.capability.Capabilities;
-import com.alrex.throwability.common.event.EventAttachCapability;
 import com.alrex.throwability.common.logic.Processor;
 import com.alrex.throwability.common.network.ItemThrowMessage;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
@@ -45,7 +44,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void onCreated() {
 		MinecraftForge.EVENT_BUS.register(new Processor());
-		MinecraftForge.EVENT_BUS.register(new EventAttachCapability());
 		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(KeyBindings.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(Capabilities.class);
