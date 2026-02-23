@@ -18,7 +18,7 @@ public class SnowballThrowable implements IThrowable {
         if (item instanceof SnowballItem) {
             Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
             SnowballEntity entity = new SnowballEntity(
-                    thrower.level, pos.x(), pos.y(), pos.z()
+                    thrower.level, thrower
             );
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);

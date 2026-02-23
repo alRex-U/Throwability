@@ -36,6 +36,10 @@ public interface IThrowable {
         thrower.playSound(SoundEvents.THROW.get(), 1f, 1f);
     }
 
+    default boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
+        return true;
+    }
+
     default int getMaxChargeTick() {
         return 20;
     }

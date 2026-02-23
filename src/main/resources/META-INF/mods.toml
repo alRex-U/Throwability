@@ -25,3 +25,9 @@ mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies.throwability]]
+modId = "naturot"
+mandatory = false
+versionRange = "${naturot_version_range}"
+ordering = "AFTER"
+side = "BOTH"

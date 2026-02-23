@@ -33,9 +33,13 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
             return;
         }
 
-        IThrowable throwable = selected.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
+        IThrowable throwable = selected
+                .getCapability(Capabilities.THROWABLE_CAPABILITY)
+                .orElseGet(StandardThrowable::getInstance);
         maxChargingTick = throwable.getMaxChargeTick();
-        if (KeyBindings.getKeyThrow().isDown()) {
+        if (!throwable.canThrowableNow(player, selected)) {
+            stopCharging();
+        } else if (KeyBindings.getKeyThrow().isDown()) {
             if (!charging) {
                 startCharging();
             }

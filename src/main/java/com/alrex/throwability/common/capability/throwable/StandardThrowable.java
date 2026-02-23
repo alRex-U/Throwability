@@ -49,12 +49,34 @@ public class StandardThrowable implements IThrowable {
         }
         Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
         Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-        double speedScale = 3. * MathHelper.clamp(chargingTick / (double) getMaxChargeTick(), 0, 1);
+        double speedScale = 4. * MathHelper.clamp(chargingTick / (double) getMaxChargeTick(), 0, 1);
 
         entity.setPos(pos.x(), pos.y() + thrower.getEyeHeight() - 0.3, pos.z());
         entity.setDeltaMovement(throwVec.scale(speedScale));
 
         return entity;
+    }
+
+    @Override
+    public boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
+        Item item = stack.getItem();
+        for (VanillaThrowableEntry entry : vanillaThrowable) {
+            if (entry.matches(item)) {
+                return entry.getThrowable().canThrowableNow(thrower, stack);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
+        Item item = stack.getItem();
+        for (VanillaThrowableEntry entry : vanillaThrowable) {
+            if (entry.matches(item)) {
+                entry.getThrowable().onThrownOnClient(thrower, stack);
+                return;
+            }
+        }
     }
 
     private static class VanillaThrowableEntry {

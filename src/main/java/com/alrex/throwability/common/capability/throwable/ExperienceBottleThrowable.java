@@ -16,9 +16,8 @@ public class ExperienceBottleThrowable implements IThrowable {
     public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof ExperienceBottleItem) {
-            Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
             ExperienceBottleEntity entity = new ExperienceBottleEntity(
-                    thrower.level, pos.x(), pos.y(), pos.z()
+                    thrower.level, thrower
             );
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 5. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);

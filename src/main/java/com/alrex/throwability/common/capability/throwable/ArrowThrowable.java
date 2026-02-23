@@ -19,12 +19,11 @@ public class ArrowThrowable implements IThrowable {
             ArrowItem arrowItem = (ArrowItem) item;
             AbstractArrowEntity entity = arrowItem.createArrow(thrower.level, stack, thrower);
 
-            Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
 
-            entity.setPos(pos.x(), pos.y(), pos.z());
             entity.setDeltaMovement(throwVec.scale(speedScale));
+            entity.setOwner(thrower);
 
             return entity;
         }

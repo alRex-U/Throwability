@@ -107,6 +107,7 @@ tasks.named('processResources', ProcessResources).configure {
             mod_license            : "GNU General Public License Version 3",
             mod_version            : mod_version,
             mod_authors            : "alRex-U",
+            naturot_version_range: naturot_version_range
     ]
 
     inputs.properties replaceProperties
