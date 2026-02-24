@@ -10,7 +10,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DirectionalPlaceContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -39,6 +41,10 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
     private BlockState blockState;
     @Shadow
     private boolean cancelDrop;
+
+    @Shadow
+    public abstract BlockState getBlockState();
+
     @Unique
     private boolean throwability$thrown = false;
 
@@ -72,20 +78,25 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
             BlockState placedPositionBlockState = this.level.getBlockState(placedPosition);
             if (placedPositionBlockState.is(Blocks.MOVING_PISTON)) return;
 
-
             this.remove();
-            if (this.cancelDrop) {
-                if (thisBlock instanceof FallingBlock) {
-                    ((FallingBlock) thisBlock).onBroken(this.level, placedPosition, (FallingBlockEntity) (Object) this);
-                }
-            } else {
+            if (!this.cancelDrop) {
+                DirectionalPlaceContext placeContext = new DirectionalPlaceContext(
+                        this.level, placedPosition, collidedDirection, ItemStack.EMPTY, collidedDirection
+                );
+                boolean canBePlaced = placedPositionBlockState.canBeReplaced(placeContext);
+                boolean isPlaceable = this.blockState.canSurvive(this.level, placedPosition);
 
-                if (placedPositionBlockState.canBeReplaced(
-                        new DirectionalPlaceContext(
-                                this.level, placedPosition, collidedDirection, ItemStack.EMPTY, collidedDirection
-                        ))
-                        && this.blockState.canSurvive(this.level, placedPosition)
-                ) {
+                BlockState customBlockState = this.blockState;
+                if (canBePlaced && !isPlaceable) {
+                    Item thisBlockItem = thisBlock.asItem();
+                    if (thisBlock.asItem() instanceof BlockItem) {
+                        customBlockState = ((BlockItem) thisBlockItem).getPlacementState(placeContext);
+                    }
+                    isPlaceable = customBlockState != null && customBlockState.canSurvive(this.level, placedPosition);
+                }
+                if (canBePlaced && isPlaceable && customBlockState != null) {
+                    this.blockState = customBlockState;
+                    thisBlock = blockState.getBlock();
 
                     if (this.blockState.hasProperty(BlockStateProperties.WATERLOGGED) && this.level.getFluidState(placedPosition).getType() == Fluids.WATER) {
                         this.blockState = this.blockState.setValue(BlockStateProperties.WATERLOGGED, true);
