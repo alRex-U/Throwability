@@ -47,7 +47,7 @@ public class AnimationHost {
     }
 
     @Nullable
-    public ModelRotation getRotation(PlayerEntity player, float partialTick) {
+    public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
         if (session == null) return null;
         return session.getRotation(player, partialTick);
     }
@@ -61,7 +61,7 @@ public class AnimationHost {
         void animateModel(PlayerModelAnimator animator);
 
         @Nullable
-        ModelRotation getRotation(PlayerEntity player, float partialTick);
+        PlayerRotation getRotation(PlayerEntity player, float partialTick);
 
         boolean stopVanillaModelAnimation(PlayerEntity player);
 
@@ -86,7 +86,7 @@ public class AnimationHost {
 
         @Nullable
         @Override
-        public ModelRotation getRotation(PlayerEntity player, float partialTick) {
+        public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
             return animation.getModelRotation(player, null, partialTick);
         }
 
@@ -127,8 +127,8 @@ public class AnimationHost {
 
         @Nullable
         @Override
-        public ModelRotation getRotation(PlayerEntity player, float partialTick) {
-            ModelRotation rot = null;
+        public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
+            PlayerRotation rot = null;
             for (IAnimation animation : animations) {
                 rot = animation.getModelRotation(player, rot, partialTick);
             }

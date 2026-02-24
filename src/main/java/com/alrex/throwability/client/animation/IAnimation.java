@@ -8,7 +8,7 @@ public interface IAnimation {
     boolean isActive(PlayerEntity player);
 
     @Nullable
-    ModelRotation getModelRotation(PlayerEntity player, @Nullable ModelRotation parentRotation, float partialTick);
+    PlayerRotation getModelRotation(PlayerEntity player, @Nullable PlayerRotation parentRotation, float partialTick);
 
     void animateModel(PlayerModelAnimator animator);
 

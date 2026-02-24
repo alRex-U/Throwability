@@ -2,7 +2,7 @@ package com.alrex.throwability.mixin.client;
 
 import com.alrex.throwability.client.animation.AnimationHost;
 import com.alrex.throwability.client.animation.IAnimationHostProvider;
-import com.alrex.throwability.client.animation.ModelRotation;
+import com.alrex.throwability.client.animation.PlayerRotation;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -55,7 +55,7 @@ public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientP
             if (animationHost.shouldStopVanillaRotation(player)) {
                 ci.cancel();
 
-                ModelRotation rotation = animationHost.getRotation(player, partialTick);
+                PlayerRotation rotation = animationHost.getRotation(player, partialTick);
                 if (rotation == null) return;
 
                 Vector3f center = rotation.getCenter();
@@ -75,7 +75,7 @@ public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientP
     private void onSetupRotationsTail(AbstractClientPlayerEntity player, MatrixStack matrixStack, float p_225621_3_, float yRotDegree, float partialTick, CallbackInfo ci) {
         if (player instanceof IAnimationHostProvider) {
             AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
-            ModelRotation rotation = animationHost.getRotation(player, partialTick);
+            PlayerRotation rotation = animationHost.getRotation(player, partialTick);
             if (rotation == null) return;
 
             Vector3f center = rotation.getCenter();

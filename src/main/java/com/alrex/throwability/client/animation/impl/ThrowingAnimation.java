@@ -1,8 +1,9 @@
 package com.alrex.throwability.client.animation.impl;
 
 import com.alrex.throwability.client.animation.IAnimation;
-import com.alrex.throwability.client.animation.ModelRotation;
 import com.alrex.throwability.client.animation.PlayerModelAnimator;
+import com.alrex.throwability.client.animation.PlayerRotation;
+import com.alrex.throwability.client.animation.Rotation;
 import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.alrex.throwability.common.ability.IThrowabilityProvider;
 import com.alrex.throwability.utils.MathUtil;
@@ -21,13 +22,19 @@ public class ThrowingAnimation implements IAnimation {
     }
 
     private float getRotationAngle(PlayerEntity player, AbstractThrowingAbility throwingAbility, float partialTick) {
-        return (float) (Math.toRadians(player.getMainArm() == HandSide.RIGHT ? 40f : -40f) * getFactor(throwingAbility, partialTick));
+        return (float) (Math.toRadians(player.getMainArm() == HandSide.RIGHT ? -40f : 40f) * getFactor(throwingAbility, partialTick));
     }
 
     private float getFactor(AbstractThrowingAbility throwingAbility, float partialTick) {
         float phase = (throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick();
         phase = MathHelper.clamp(phase, 0, 1);
         return 1 - MathUtil.squaring(1 - phase);
+    }
+
+    private float getOffHandArmFactor(AbstractThrowingAbility throwingAbility, float partialTick) {
+        float phase = (throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick();
+        phase = MathHelper.clamp(phase, 0, 1);
+        return 1 - (1 - phase) * (1 - phase) * (1 - phase);
     }
 
     @Override
@@ -37,10 +44,10 @@ public class ThrowingAnimation implements IAnimation {
 
     @Nullable
     @Override
-    public ModelRotation getModelRotation(PlayerEntity player, @Nullable ModelRotation parentRotation, float partialTick) {
+    public PlayerRotation getModelRotation(PlayerEntity player, @Nullable PlayerRotation parentRotation, float partialTick) {
         if (!(player instanceof IThrowabilityProvider)) return null;
         float rotAngle = getRotationAngle(player, ((IThrowabilityProvider) player).getThrowAbility(), partialTick);
-        return new ModelRotation(Vector3f.YP.rotation(rotAngle));
+        return new PlayerRotation(Vector3f.YP.rotation(rotAngle));
     }
 
     @Override
@@ -61,10 +68,12 @@ public class ThrowingAnimation implements IAnimation {
         if (player.getMainArm() == HandSide.RIGHT) {
             animator.setRotation(
                     animator.getModel().leftArm,
-                    (float) Math.toRadians(-75),
-                    0,
-                    0,
-                    factor
+                    Rotation.Builder.create()
+                            .apply(
+                                    new Vector3f(-1f / MathHelper.SQRT_OF_TWO, 0f, -1f / MathHelper.SQRT_OF_TWO),
+                                    (float) Math.toRadians(90 - animator.getHeadPitch() / 2)
+                            ).build(),
+                    getOffHandArmFactor(throwingAbility, animator.getPartialTick())
             );
             animator.setRotation(
                     animator.getModel().rightArm,
@@ -76,18 +85,30 @@ public class ThrowingAnimation implements IAnimation {
         } else {
             animator.setRotation(
                     animator.getModel().rightArm,
-                    (float) Math.toRadians(-75),
-                    0,
-                    0,
-                    factor
+                    Rotation.Builder.create()
+                            .apply(
+                                    new Vector3f(-1f / MathHelper.SQRT_OF_TWO, 0f, 1f / MathHelper.SQRT_OF_TWO),
+                                    (float) Math.toRadians(90 - animator.getHeadPitch() / 2)
+                            ).build(),
+                    getOffHandArmFactor(throwingAbility, animator.getPartialTick())
             );
             animator.setRotation(
                     animator.getModel().leftArm,
-                    (float) Math.toRadians(-135),
+                    (float) Math.toRadians(-140),
                     (float) Math.toRadians(-20),
                     0,
                     factor
             );
         }
+        animator.addRotation(
+                animator.getModel().rightLeg,
+                0, rotAngle / 2f, 0,
+                factor
+        );
+        animator.addRotation(
+                animator.getModel().leftLeg,
+                0, rotAngle / 2f, 0,
+                factor
+        );
     }
 }

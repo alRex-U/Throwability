@@ -86,16 +86,32 @@ public class PlayerModelAnimator {
         renderer.zRot = zRot;
     }
 
+    public void setRotation(ModelRenderer renderer, Rotation rotation, float factor) {
+        setRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
+    }
+
+    public void setRotation(ModelRenderer renderer, Rotation rotation) {
+        setRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
+    }
+
     public void addRotation(ModelRenderer renderer, float xRot, float yRot, float zRot, float factor) {
-        renderer.xRot += MathHelper.rotLerp(factor, renderer.xRot, xRot);
-        renderer.yRot += MathHelper.rotLerp(factor, renderer.yRot, yRot);
-        renderer.zRot += MathHelper.rotLerp(factor, renderer.zRot, zRot);
+        renderer.xRot += factor * xRot;
+        renderer.yRot += factor * yRot;
+        renderer.zRot += factor * zRot;
     }
 
     public void addRotation(ModelRenderer renderer, float xRot, float yRot, float zRot) {
         renderer.xRot += xRot;
         renderer.yRot += yRot;
         renderer.zRot += zRot;
+    }
+
+    public void addRotation(ModelRenderer renderer, Rotation rotation, float factor) {
+        addRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
+    }
+
+    public void addRotation(ModelRenderer renderer, Rotation rotation) {
+        addRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
     }
 
     public void copyFromBodyToWear() {
