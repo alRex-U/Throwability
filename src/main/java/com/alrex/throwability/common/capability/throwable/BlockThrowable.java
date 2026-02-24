@@ -1,6 +1,7 @@
 package com.alrex.throwability.common.capability.throwable;
 
 import com.alrex.throwability.common.capability.IThrowable;
+import com.alrex.throwability.common.thrown.IThrown;
 import com.alrex.throwability.extern.AdditionalMods;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.entity.Entity;
@@ -30,6 +31,9 @@ public class BlockThrowable implements IThrowable {
             entity.time = 1;
             entity.setPos(pos.x(), pos.y(), pos.z());
             entity.setDeltaMovement(deltaMovement);
+            if (entity instanceof IThrown) {
+                ((IThrown) entity).setThrown(true);
+            }
 
             AdditionalMods.Naturot().rotateEntity(entity, deltaMovement);
 

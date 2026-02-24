@@ -45,7 +45,7 @@ public class StandardThrowable implements IThrowable {
 
         Entity entity = stack.getItem().createEntity(thrower.level, thrower, stack);
         if (entity == null) {
-            entity = throwAsItem(thrower, stack, chargingTick);
+            return throwAsItem(thrower, stack, chargingTick);
         }
         Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
         Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
