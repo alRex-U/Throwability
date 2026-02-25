@@ -14,7 +14,7 @@ public class StandardThrowable implements IThrowable {
     private static StandardThrowable INSTANCE = null;
     private final VanillaThrowableEntry[] vanillaThrowable = new VanillaThrowableEntry[]{
             new VanillaThrowableEntry(ArrowItem.class, new ArrowThrowable()),
-            new VanillaThrowableEntry(item -> (item == Items.TNT), new TNTThrowable()),
+            new VanillaThrowableEntry(item -> (item.getItem() == Items.TNT), new TNTThrowable()),
             new VanillaThrowableEntry(EggItem.class, new EggThrowable()),
             new VanillaThrowableEntry(EnderPearlItem.class, new EnderPearlThrowable()),
             new VanillaThrowableEntry(ExperienceBottleItem.class, new ExperienceBottleThrowable()),
@@ -24,6 +24,7 @@ public class StandardThrowable implements IThrowable {
             new VanillaThrowableEntry(ThrowablePotionItem.class, new ThrowablePotionThrowable()),
             new VanillaThrowableEntry(TridentItem.class, new TridentThrowable()),
             new VanillaThrowableEntry(BlockItem.class, new BlockThrowable()),
+            new VanillaThrowableEntry(WeaponThrowable::hasAttackDamage, new WeaponThrowable())
     };
 
     private StandardThrowable() {
@@ -36,9 +37,8 @@ public class StandardThrowable implements IThrowable {
 
     @Override
     public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargingTick) {
-        Item item = stack.getItem();
         for (VanillaThrowableEntry entry : vanillaThrowable) {
-            if (entry.matches(item)) {
+            if (entry.matches(stack)) {
                 return entry.getThrowable().throwAsEntity(thrower, stack, chargingTick);
             }
         }
@@ -59,9 +59,8 @@ public class StandardThrowable implements IThrowable {
 
     @Override
     public boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
-        Item item = stack.getItem();
         for (VanillaThrowableEntry entry : vanillaThrowable) {
-            if (entry.matches(item)) {
+            if (entry.matches(stack)) {
                 return entry.getThrowable().canThrowableNow(thrower, stack);
             }
         }
@@ -72,7 +71,7 @@ public class StandardThrowable implements IThrowable {
     public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
         Item item = stack.getItem();
         for (VanillaThrowableEntry entry : vanillaThrowable) {
-            if (entry.matches(item)) {
+            if (entry.matches(stack)) {
                 entry.getThrowable().onThrownOnClient(thrower, stack);
                 return;
             }
@@ -80,20 +79,20 @@ public class StandardThrowable implements IThrowable {
     }
 
     private static class VanillaThrowableEntry {
-        private final Predicate<Item> itemMatcher;
+        private final Predicate<ItemStack> itemMatcher;
         private final IThrowable throwable;
 
-        public VanillaThrowableEntry(Predicate<Item> itemMatcher, IThrowable throwable) {
+        public VanillaThrowableEntry(Predicate<ItemStack> itemMatcher, IThrowable throwable) {
             this.itemMatcher = itemMatcher;
             this.throwable = throwable;
         }
 
         public VanillaThrowableEntry(Class<? extends Item> itemCls, IThrowable throwable) {
-            this.itemMatcher = item -> itemCls.isAssignableFrom(item.getClass());
+            this.itemMatcher = itemStack -> itemCls.isAssignableFrom(itemStack.getItem().getClass());
             this.throwable = throwable;
         }
 
-        public boolean matches(Item item) {
+        public boolean matches(ItemStack item) {
             return itemMatcher.test(item);
         }
 

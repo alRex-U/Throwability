@@ -2,11 +2,14 @@ package com.alrex.throwability;
 
 import com.alrex.throwability.client.animation.Animations;
 import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
+import com.alrex.throwability.client.render.entity.EntityRenderers;
+import com.alrex.throwability.common.entity.EntityTypes;
 import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.extern.AdditionalMods;
 import com.alrex.throwability.proxy.ClientProxy;
 import com.alrex.throwability.proxy.CommonProxy;
 import com.alrex.throwability.proxy.ServerProxy;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -44,12 +47,16 @@ public class Throwability {
 		fmlEventBus.addListener(this::onLoadCompleted);
 
 		SoundEvents.register(fmlEventBus);
+		EntityTypes.register(fmlEventBus);
+
 		PROXY.onCreated();
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
 		PROXY.registerMessages(CHANNEL);
 		PROXY.registerHandlers(MinecraftForge.EVENT_BUS);
+
+		EntityRenderers.register(Minecraft.getInstance().getEntityRenderDispatcher());
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
