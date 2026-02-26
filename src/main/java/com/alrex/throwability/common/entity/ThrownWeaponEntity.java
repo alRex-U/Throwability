@@ -69,13 +69,15 @@ public class ThrownWeaponEntity extends AbstractArrowEntity {
                 this.doPostHurtEffects(hitLivingEntity);
             }
         }
-        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01).add(0, 0.3, 0));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
         //this.playSound(lvt_6_1_, lvt_7_2_, 1.0F);
     }
 
     @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
+    protected void tickDespawn() {
+        if (this.pickup != PickupStatus.ALLOWED) {
+            super.tickDespawn();
+        }
     }
 
     @Override

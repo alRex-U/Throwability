@@ -43,13 +43,13 @@ public class WeaponThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
         if (hasAttackDamage(stack)) {
+            stack.hurtAndBreak(1, thrower, (player) -> player.broadcastBreakEvent(thrower.getUsedItemHand()));
             ThrownWeaponEntity entity = new ThrownWeaponEntity(thrower.level, thrower, stack);
 
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
-            entity.setOwner(thrower);
 
             return entity;
         }

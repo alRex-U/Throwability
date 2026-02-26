@@ -17,7 +17,7 @@ public class TridentThrowable implements IThrowable {
     public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof TridentItem) {
-            stack.hurtAndBreak(1, thrower, (p_220047_1_) -> p_220047_1_.broadcastBreakEvent(thrower.getUsedItemHand()));
+            stack.hurtAndBreak(1, thrower, (player) -> player.broadcastBreakEvent(thrower.getUsedItemHand()));
             TridentEntity entity = new TridentEntity(
                     thrower.level, thrower, stack
             );
@@ -25,17 +25,10 @@ public class TridentThrowable implements IThrowable {
             double speedScale = 4. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
-            entity.setOwner(thrower);
 
             return entity;
         }
         return throwAsItem(thrower, stack, chargedTick);
-    }
-
-    @Override
-    public boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
-        Item item = stack.getItem();
-        return item instanceof TridentItem && item.getUseDuration(stack) >= 10;
     }
 
     @Override

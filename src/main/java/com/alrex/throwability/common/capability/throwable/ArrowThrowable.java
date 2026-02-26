@@ -23,7 +23,6 @@ public class ArrowThrowable implements IThrowable {
             double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
-            entity.setOwner(thrower);
 
             return entity;
         }
