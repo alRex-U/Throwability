@@ -25,7 +25,7 @@ public class ThrowingAnimation implements IAnimation {
         return (float) (Math.toRadians(player.getMainArm() == HandSide.RIGHT ? -40f : 40f) * getFactor(throwingAbility, partialTick));
     }
 
-    private float getFactor(AbstractThrowingAbility throwingAbility, float partialTick) {
+    public static float getFactor(AbstractThrowingAbility throwingAbility, float partialTick) {
         float phase = (throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick();
         phase = MathHelper.clamp(phase, 0, 1);
         return 1 - MathUtil.squaring(1 - phase);
@@ -75,6 +75,10 @@ public class ThrowingAnimation implements IAnimation {
                             ).build(),
                     getOffHandArmFactor(throwingAbility, animator.getPartialTick())
             );
+            animator.bob(
+                    animator.getModel().leftArm,
+                    -factor
+            );
             animator.setRotation(
                     animator.getModel().rightArm,
                     (float) Math.toRadians(-140),
@@ -91,6 +95,10 @@ public class ThrowingAnimation implements IAnimation {
                                     (float) Math.toRadians(90 - animator.getHeadPitch() / 2)
                             ).build(),
                     getOffHandArmFactor(throwingAbility, animator.getPartialTick())
+            );
+            animator.bob(
+                    animator.getModel().rightArm,
+                    factor
             );
             animator.setRotation(
                     animator.getModel().leftArm,

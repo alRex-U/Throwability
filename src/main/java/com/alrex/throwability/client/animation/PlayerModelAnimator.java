@@ -114,6 +114,11 @@ public class PlayerModelAnimator {
         addRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
     }
 
+    public void bob(ModelRenderer renderer, float scale) {
+        renderer.zRot += scale * MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+        renderer.xRot += scale * MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+    }
+
     public void copyFromBodyToWear() {
         model.rightSleeve.copyFrom(model.rightArm);
         model.leftSleeve.copyFrom(model.leftArm);
