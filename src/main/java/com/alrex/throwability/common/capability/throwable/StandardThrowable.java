@@ -26,6 +26,7 @@ public class StandardThrowable implements IThrowable {
             () -> new VanillaThrowableEntry(SnowballItem.class, new SnowballThrowable()),
             () -> new VanillaThrowableEntry(ThrowablePotionItem.class, new ThrowablePotionThrowable()),
             () -> new VanillaThrowableEntry(TridentItem.class, new TridentThrowable()),
+            () -> new VanillaThrowableEntry(SpawnEggItem.class, new SpawnEggThrowable()),
             () -> new VanillaThrowableEntry(BlockItem.class, new BlockThrowable()),
             () -> new VanillaThrowableEntry(WeaponThrowable::hasAttackDamage, new WeaponThrowable())
     ));

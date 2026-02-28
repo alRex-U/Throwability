@@ -19,6 +19,17 @@ public class EntityTypes {
                     .updateInterval(20)
                     .build("thrown_weapon")
     );
+    public static RegistryObject<EntityType<ThrownSpawnEggEntity>> THROWN_SPAWN_EGG = REGISTRY.register(
+            "thrown_spawn_egg",
+            () -> EntityType.Builder
+                    .of((EntityType.IFactory<ThrownSpawnEggEntity>) ThrownSpawnEggEntity::new, EntityClassification.MISC)
+                    .sized(0.25f, 0.25f)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build("thrown_spawn_egg")
+    );
+
+
 
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);
