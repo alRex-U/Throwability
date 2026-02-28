@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ThrowUtil {
 	public static void throwItem(PlayerEntity player, int inventoryIndex, ItemStack selectedItem, IThrowable itemThrowable, ThrowType type, int chargingTick) {
-		if (type == ThrowType.ONE_AS_ENTITY || type == ThrowType.ONE_AS_ITEM) {
+        if ((type == ThrowType.ONE_AS_ENTITY || type == ThrowType.ONE_AS_ITEM) && selectedItem.getCount() > 1) {
 			selectedItem = selectedItem.split(1);
 		} else {
 			player.inventory.removeItem(selectedItem);
@@ -31,11 +31,15 @@ public class ThrowUtil {
 			if (type == ThrowType.ONE_AS_ENTITY) {
 				entity = itemThrowable.throwAsEntity(player, selectedItem, chargingTick);
 			} else {
-				ItemEntity itemEntity = itemThrowable.throwAsItem(player, selectedItem, chargingTick);
-				itemEntity.setThrower(player.getUUID());
+                Entity itemEntity = itemThrowable.throwAsItem(player, selectedItem, chargingTick);
+                if (itemEntity instanceof ItemEntity) {
+                    ((ItemEntity) itemEntity).setThrower(player.getUUID());
+                }
 				entity = itemEntity;
 			}
-			player.level.addFreshEntity(entity);
+            if (entity != null) {
+                player.level.addFreshEntity(entity);
+            }
 		}
 	}
 

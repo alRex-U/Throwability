@@ -23,7 +23,7 @@ public class TNTThrowable implements IThrowable {
                     thrower.level, pos.x(), pos.y(), pos.z(), thrower
             );
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double phase = MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+            double phase = MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
             double speedScale = 3. * phase;
             Vector3d deltaMovement = throwVec.scale(speedScale);
 

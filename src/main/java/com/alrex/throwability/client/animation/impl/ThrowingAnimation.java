@@ -6,6 +6,7 @@ import com.alrex.throwability.client.animation.PlayerRotation;
 import com.alrex.throwability.client.animation.Rotation;
 import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.alrex.throwability.common.ability.IThrowabilityProvider;
+import com.alrex.throwability.extern.AdditionalMods;
 import com.alrex.throwability.utils.MathUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.HandSide;
@@ -18,7 +19,8 @@ public class ThrowingAnimation implements IAnimation {
     @Override
     public boolean isActive(PlayerEntity player) {
         return player instanceof IThrowabilityProvider
-                && ((IThrowabilityProvider) player).getThrowAbility().isCharging();
+                && ((IThrowabilityProvider) player).getThrowAbility().isCharging()
+                && !AdditionalMods.CarryOn().isCarryingOn(player);
     }
 
     private float getRotationAngle(PlayerEntity player, AbstractThrowingAbility throwingAbility, float partialTick) {

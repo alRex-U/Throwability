@@ -22,11 +22,11 @@ public class RemoteThrowingAbility extends AbstractThrowingAbility {
         ItemStack selected = player.inventory.getSelected();
         if (selected.isEmpty()) {
             stopCharging();
-            chargingTick = MathHelper.clamp(chargingTick, 0, StandardThrowable.getInstance().getMaxChargeTick());
+            chargingTick = MathHelper.clamp(chargingTick, 0, StandardThrowable.getInstance().getMaxChargeTick(selected));
             return;
         }
         IThrowable throwable = selected.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
-        chargingTick = MathHelper.clamp(chargingTick, 0, throwable.getMaxChargeTick());
+        chargingTick = MathHelper.clamp(chargingTick, 0, throwable.getMaxChargeTick(selected));
     }
 
     public static class SyncedData {

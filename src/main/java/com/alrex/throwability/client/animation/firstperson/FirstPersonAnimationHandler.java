@@ -14,7 +14,6 @@ public class FirstPersonAnimationHandler {
     public static void applyItemArmRotation(PlayerEntity player, AbstractThrowingAbility throwingAbility, MatrixStack matrixStack, HandSide handSide, float partial) {
         if (!throwingAbility.isCharging()) return;
         if (handSide != player.getMainArm()) return;
-        float sign = handSide == HandSide.RIGHT ? 1 : -1;
         float factor = ThrowingAnimation.getFactor(throwingAbility, partial);
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(factor * 20));
     }

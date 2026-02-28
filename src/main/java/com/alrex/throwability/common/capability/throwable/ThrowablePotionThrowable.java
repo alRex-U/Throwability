@@ -19,7 +19,7 @@ public class ThrowablePotionThrowable implements IThrowable {
             Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
             PotionEntity entity = new PotionEntity(thrower.level, thrower);
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 5. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+            double speedScale = 5. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setItem(stack);
             entity.setPos(pos.x(), pos.y(), pos.z());

@@ -95,6 +95,9 @@ dependencies {
 
     compileOnly fg.deobf("curse.maven:Naturot-1460728:${naturot_file_id}")
     runtimeOnly fg.deobf("curse.maven:Naturot-1460728:${naturot_file_id}")
+
+    runtimeOnly fg.deobf("curse.maven:CarryOn-274259:${CarryOn_file_id}")
+    compileOnly fg.deobf("curse.maven:CarryOn-274259:${CarryOn_file_id}")
 }
 tasks.named('processResources', ProcessResources).configure {
     var replaceProperties = [

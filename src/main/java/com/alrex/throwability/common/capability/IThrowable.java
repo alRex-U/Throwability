@@ -2,6 +2,7 @@ package com.alrex.throwability.common.capability;
 
 import com.alrex.throwability.common.sound.SoundEvents;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 public interface IThrowable {
     Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick);
 
-    default ItemEntity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    default Entity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
         ItemEntity itemEntity = new ItemEntity(
                 thrower.level, thrower.getX(), thrower.getEyeY() - 0.3, thrower.getZ(), stack
         );
@@ -37,10 +38,11 @@ public interface IThrowable {
     }
 
     default boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
-        return true;
+        Pose pose = thrower.getPose();
+        return pose == Pose.STANDING || pose == Pose.CROUCHING;
     }
 
-    default int getMaxChargeTick() {
+    default int getMaxChargeTick(ItemStack stack) {
         return 20;
     }
 }

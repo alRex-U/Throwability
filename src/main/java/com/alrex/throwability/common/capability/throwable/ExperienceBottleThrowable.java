@@ -20,7 +20,7 @@ public class ExperienceBottleThrowable implements IThrowable {
                     thrower.level, thrower
             );
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 5. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+            double speedScale = 5. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 

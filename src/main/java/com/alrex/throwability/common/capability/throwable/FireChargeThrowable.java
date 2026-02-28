@@ -22,9 +22,8 @@ public class FireChargeThrowable implements IThrowable {
             );
             Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
-            entity.setPos(pos.x(), pos.y(), pos.z());
             entity.setDeltaMovement(throwVec.scale(speedScale));
 
             return entity;

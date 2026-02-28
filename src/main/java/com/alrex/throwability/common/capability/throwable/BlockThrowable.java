@@ -25,7 +25,7 @@ public class BlockThrowable implements IThrowable {
             );
 
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(), 0, 1);
+            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
             Vector3d deltaMovement = throwVec.scale(speedScale);
 
             entity.time = 1;

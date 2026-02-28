@@ -25,41 +25,37 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
         if (currentItemSlot != player.inventory.selected || Minecraft.getInstance().screen != null) {
             stopCharging();
             currentItemSlot = player.inventory.selected;
-            return;
-        }
-        ItemStack selected = player.inventory.getSelected();
-        if (selected.isEmpty()) {
-            stopCharging();
-            return;
-        }
-
-        IThrowable throwable = selected
-                .getCapability(Capabilities.THROWABLE_CAPABILITY)
-                .orElseGet(StandardThrowable::getInstance);
-        maxChargingTick = throwable.getMaxChargeTick();
-        if (!throwable.canThrowableNow(player, selected)) {
-            stopCharging();
-        } else if (KeyBindings.getKeyThrow().isDown()) {
-            if (!charging) {
-                startCharging();
-            }
         } else {
-            if (charging) {
-                if (chargingTick > maxChargingTick / 5f) {
-                    ThrowType type;
-                    if (KeyBindings.getKeySpecialModifier().isDown()) {
-                        type = ThrowType.ONE_AS_ENTITY;
-                    } else if (KeyBindings.getKeyAllModifier().isDown()) {
-                        type = ThrowType.ALL_AS_ITEM;
-                    } else {
-                        type = ThrowType.ONE_AS_ITEM;
-                    }
-                    ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, type, chargingTick);
-                }
+            ItemStack selected = player.inventory.getSelected();
+            if (selected.isEmpty()) {
                 stopCharging();
+            } else {
+                IThrowable throwable = selected
+                        .getCapability(Capabilities.THROWABLE_CAPABILITY)
+                        .orElseGet(StandardThrowable::getInstance);
+                maxChargingTick = throwable.getMaxChargeTick(selected);
+                if (!throwable.canThrowableNow(player, selected)) {
+                    stopCharging();
+                } else if (KeyBindings.getKeyThrow().isDown()) {
+                    if (!charging) {
+                        startCharging();
+                    }
+                } else if (charging) {
+                    if (chargingTick > maxChargingTick / 5f) {
+                        ThrowType type;
+                        if (KeyBindings.getKeySpecialModifier().isDown()) {
+                            type = ThrowType.ONE_AS_ENTITY;
+                        } else if (KeyBindings.getKeyAllModifier().isDown()) {
+                            type = ThrowType.ALL_AS_ITEM;
+                        } else {
+                            type = ThrowType.ONE_AS_ITEM;
+                        }
+                        ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, type, chargingTick);
+                    }
+                    stopCharging();
+                }
             }
         }
-
 
         if (oldCharging != charging) {
             SyncThrowStateMessage.send(
