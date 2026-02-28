@@ -19,6 +19,7 @@ public class EntityTypes {
                     .updateInterval(20)
                     .build("thrown_weapon")
     );
+
     public static RegistryObject<EntityType<ThrownSpawnEggEntity>> THROWN_SPAWN_EGG = REGISTRY.register(
             "thrown_spawn_egg",
             () -> EntityType.Builder
@@ -37,6 +38,16 @@ public class EntityTypes {
                     .clientTrackingRange(4)
                     .updateInterval(10)
                     .build("thrown_glowstone_dust")
+    );
+
+    public static RegistryObject<EntityType<ThrownBlazePowderEntity>> THROWN_BLAZE_POWDER = REGISTRY.register(
+            "thrown_blaze_powder",
+            () -> EntityType.Builder
+                    .of((EntityType.IFactory<ThrownBlazePowderEntity>) ThrownBlazePowderEntity::new, EntityClassification.MISC)
+                    .sized(0.25f, 0.25f)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build("thrown_blaze_powder")
     );
 
     public static void register(IEventBus bus) {
