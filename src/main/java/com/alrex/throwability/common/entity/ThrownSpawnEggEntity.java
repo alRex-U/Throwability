@@ -61,7 +61,6 @@ public class ThrownSpawnEggEntity extends ProjectileItemEntity implements IRende
             if (!egg.isEmpty()) {
                 spawnAtLocation(egg);
             }
-            this.level.broadcastEntityEvent(this, (byte) 3);
             this.remove();
         }
     }

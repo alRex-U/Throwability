@@ -29,7 +29,15 @@ public class EntityTypes {
                     .build("thrown_spawn_egg")
     );
 
-
+    public static RegistryObject<EntityType<ThrownGlowstoneDustEntity>> THROWN_GLOWSTONE_DUST = REGISTRY.register(
+            "thrown_glowstone_dust",
+            () -> EntityType.Builder
+                    .of((EntityType.IFactory<ThrownGlowstoneDustEntity>) ThrownGlowstoneDustEntity::new, EntityClassification.MISC)
+                    .sized(0.25f, 0.25f)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build("thrown_glowstone_dust")
+    );
 
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);

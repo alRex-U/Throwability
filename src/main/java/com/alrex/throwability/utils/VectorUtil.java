@@ -2,6 +2,8 @@ package com.alrex.throwability.utils;
 
 import net.minecraft.util.math.vector.Vector3d;
 
+import java.util.Random;
+
 public class VectorUtil {
 	public static double toYawDegree(Vector3d vec) {
 		return (Math.atan2(vec.z(), vec.x()) * 180.0 / Math.PI - 90);
@@ -13,5 +15,13 @@ public class VectorUtil {
 
 	public static Vector3d fromYawDegree(double degree) {
 		return new Vector3d(-Math.sin(Math.toRadians(degree)), 0, Math.cos(Math.toRadians(degree)));
+	}
+
+	public static Vector3d getRandomNormalizedVec(Random random) {
+		Vector3d vec = new Vector3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5).normalize();
+		if (vec == Vector3d.ZERO) {
+			return new Vector3d(0, 1, 0);
+		}
+		return vec;
 	}
 }

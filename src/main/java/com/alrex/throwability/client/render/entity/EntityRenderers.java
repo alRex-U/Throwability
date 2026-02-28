@@ -9,5 +9,6 @@ public class EntityRenderers {
     public static void register(EntityRendererManager manager) {
         manager.register(EntityTypes.THROWN_WEAPON.get(), new ThrownWeaponRenderer(manager));
         manager.register(EntityTypes.THROWN_SPAWN_EGG.get(), new SpriteRenderer<>(manager, Minecraft.getInstance().getItemRenderer()));
+        manager.register(EntityTypes.THROWN_GLOWSTONE_DUST.get(), new SpriteRenderer<>(manager, Minecraft.getInstance().getItemRenderer()));
     }
 }
