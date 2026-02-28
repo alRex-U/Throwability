@@ -37,6 +37,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
+		super.registerHandlers(eventBus);
 		eventBus.register(ThrowabilityAnimation.class);
 		eventBus.register(new ThrowPowerMeter());
 	}

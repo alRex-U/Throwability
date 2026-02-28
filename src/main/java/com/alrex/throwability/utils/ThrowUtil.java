@@ -25,7 +25,7 @@ public class ThrowUtil {
 		}
 		player.swing(Hand.MAIN_HAND);
 		if (player.level.isClientSide()) {
-			itemThrowable.onThrownOnClient(player, selectedItem);
+			itemThrowable.onThrownOnClient(player, selectedItem, type);
 		} else {
 			Entity entity;
 			if (type == ThrowType.ONE_AS_ENTITY) {

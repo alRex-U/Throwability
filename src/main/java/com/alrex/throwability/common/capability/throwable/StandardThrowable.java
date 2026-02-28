@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.capability.throwable;
 
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.entity.Entity;
@@ -51,6 +52,15 @@ public class StandardThrowable implements IThrowable {
     public static StandardThrowable getInstance() {
         if (INSTANCE == null) INSTANCE = new StandardThrowable();
         return INSTANCE;
+    }
+
+    public boolean matchAnyEntry(ItemStack stack) {
+        for (VanillaThrowableEntry entry : vanillaThrowable) {
+            if (entry.matches(stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -107,10 +117,10 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
-                entry.getThrowable().onThrownOnClient(thrower, stack);
+                entry.getThrowable().onThrownOnClient(thrower, stack, type);
                 return;
             }
         }

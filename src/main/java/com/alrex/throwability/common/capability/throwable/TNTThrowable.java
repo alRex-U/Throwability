@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.capability.throwable;
 
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.extern.AdditionalMods;
 import com.alrex.throwability.utils.ThrowUtil;
@@ -38,8 +39,10 @@ public class TNTThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
-        IThrowable.super.onThrownOnClient(thrower, stack);
-        thrower.playSound(SoundEvents.FLINTANDSTEEL_USE, 1, 1);
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
+        IThrowable.super.onThrownOnClient(thrower, stack, type);
+        if (type == ThrowType.ONE_AS_ENTITY) {
+            thrower.playSound(SoundEvents.FLINTANDSTEEL_USE, 1, 1);
+        }
     }
 }

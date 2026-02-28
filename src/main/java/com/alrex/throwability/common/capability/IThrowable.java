@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.capability;
 
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.sound.SoundEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Pose;
@@ -33,7 +34,7 @@ public interface IThrowable {
         return itemEntity;
     }
 
-    default void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
+    default void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
         thrower.playSound(SoundEvents.THROW.get(), 1f, 1f);
     }
 

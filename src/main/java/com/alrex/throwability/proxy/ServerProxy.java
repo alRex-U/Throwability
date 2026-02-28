@@ -31,7 +31,7 @@ public class ServerProxy extends CommonProxy {
 
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
-
+		super.registerHandlers(eventBus);
 	}
 
 	@Override

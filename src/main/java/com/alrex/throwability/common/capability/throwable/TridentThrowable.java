@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.capability.throwable;
 
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.entity.Entity;
@@ -32,7 +33,7 @@ public class TridentThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
         thrower.playSound(SoundEvents.TRIDENT_THROW, 1, 1);
     }
 }

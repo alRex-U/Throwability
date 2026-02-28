@@ -1,6 +1,7 @@
 package com.alrex.throwability.extern.carryon.throwable;
 
 import com.alrex.throwability.Throwability;
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.entity.Entity;
@@ -44,8 +45,8 @@ public class CarryonEntityThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack) {
-        IThrowable.super.onThrownOnClient(thrower, stack);
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
+        IThrowable.super.onThrownOnClient(thrower, stack, type);
         thrower.getPersistentData().remove("carrySlot");
         ItemCarryonEntity.clearEntityData(stack);
     }

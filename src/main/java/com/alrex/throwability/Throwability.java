@@ -49,6 +49,7 @@ public class Throwability {
 		SoundEvents.register(fmlEventBus);
 		EntityTypes.register(fmlEventBus);
 
+
 		PROXY.onCreated();
 	}
 
