@@ -1,7 +1,9 @@
 package com.alrex.throwability.common.capability.throwable;
 
+import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.common.entity.ThrownWeaponEntity;
+import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.utils.ThrowUtil;
 import com.google.common.collect.Multimap;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -54,5 +56,10 @@ public class WeaponThrowable implements IThrowable {
             return entity;
         }
         return throwAsItem(thrower, stack, chargedTick);
+    }
+
+    @Override
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
+        thrower.playSound(SoundEvents.WEAPON_THROW.get(), 1f, 1f);
     }
 }

@@ -1,6 +1,7 @@
 package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.common.capability.throwable.WeaponThrowable;
+import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.common.util.DamageSources;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -16,6 +17,8 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -23,7 +26,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nonnull;
 
 public class ThrownWeaponEntity extends AbstractArrowEntity {
-    private static DataParameter<ItemStack> DATA_ITEM_STACK;
+    private static final DataParameter<ItemStack> DATA_ITEM_STACK;
 
     static {
         DATA_ITEM_STACK = EntityDataManager.defineId(ThrownWeaponEntity.class, DataSerializers.ITEM_STACK);
@@ -68,9 +71,20 @@ public class ThrownWeaponEntity extends AbstractArrowEntity {
                 }
                 this.doPostHurtEffects(hitLivingEntity);
             }
+            playSound(SoundEvents.WEAPON_HIT_ENTITY.get(), 1f, 1f);
         }
         this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
-        //this.playSound(lvt_6_1_, lvt_7_2_, 1.0F);
+    }
+
+    @Override
+    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
+        super.onHitBlock(blockRayTraceResult);
+        setSoundEvent(SoundEvents.WEAPON_HIT_BLOCK.get());
+    }
+
+    @Override
+    protected SoundEvent getDefaultHitGroundSoundEvent() {
+        return SoundEvents.WEAPON_HIT_BLOCK.get();
     }
 
     @Override
