@@ -1,6 +1,6 @@
 package com.alrex.throwability.common.entity;
 
-import com.alrex.throwability.utils.VectorUtil;
+import com.alrex.throwability.client.particle.ParticleUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.IRendersAsItem;
@@ -9,12 +9,13 @@ import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.IPacket;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,33 +43,25 @@ public class ThrownGlowstoneDustEntity extends ProjectileItemEntity implements I
                     ((LivingEntity) entity).addEffect(new EffectInstance(Effects.GLOWING, 200));
                 }
             }
+            level.broadcastEntityEvent(this, (byte) 3);
+            remove();
         } else {
-            Vector3d pos = position();
-            BlockRayTraceResult blockRayTraceResult = (rayTraceResult instanceof BlockRayTraceResult)
-                    ? (BlockRayTraceResult) rayTraceResult
+            Direction direction = (rayTraceResult instanceof BlockRayTraceResult)
+                    ? ((BlockRayTraceResult) rayTraceResult).getDirection().getOpposite()
                     : null;
-            for (int i = 0; i < 12; i++) {
-                Vector3d movement = VectorUtil.getRandomNormalizedVec(random).scale(0.3 + 0.08 * random.nextDouble());
-                if (blockRayTraceResult != null) {
-                    switch (blockRayTraceResult.getDirection().getAxis()) {
-                        case X:
-                            if (((int) Math.signum(movement.x)) != blockRayTraceResult.getDirection().getAxisDirection().getStep())
-                                movement = movement.multiply(-1, 1, 1);
-                            break;
-                        case Y:
-                            if (((int) Math.signum(movement.y)) != blockRayTraceResult.getDirection().getAxisDirection().getStep())
-                                movement = movement.multiply(1, -1, 1);
-                            break;
-                        case Z:
-                            if (((int) Math.signum(movement.z)) != blockRayTraceResult.getDirection().getAxisDirection().getStep())
-                                movement = movement.multiply(1, 1, -1);
-                            break;
-                    }
-                }
-                level.addParticle(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, movement.x, movement.y, movement.z);
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.END_ROD, level, position(), random, 0.3, 0.08, 12, direction);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void handleEntityEvent(byte eventID) {
+        if (eventID == 3) {
+            IParticleData particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
+            for (int i = 0; i < 8; i++) {
+                level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
         }
-        remove();
     }
 
     @Override

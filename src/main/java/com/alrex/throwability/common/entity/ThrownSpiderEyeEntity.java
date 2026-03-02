@@ -10,44 +10,44 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import java.util.List;
-
 @OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownBlazePowderEntity extends ProjectileItemEntity implements IRendersAsItem {
-    public ThrownBlazePowderEntity(EntityType<? extends ThrownBlazePowderEntity> entityType, World level) {
+public class ThrownSpiderEyeEntity extends ProjectileItemEntity implements IRendersAsItem {
+    public ThrownSpiderEyeEntity(EntityType<? extends ThrownSpiderEyeEntity> entityType, World level) {
         super(entityType, level);
     }
 
-    public ThrownBlazePowderEntity(World level, LivingEntity thrower) {
-        super(EntityTypes.THROWN_BLAZE_POWDER.get(), thrower, level);
+    public ThrownSpiderEyeEntity(World level, LivingEntity entity) {
+        super(EntityTypes.THROWN_SPIDER_EYE.get(), entity, level);
     }
 
     @Override
-    protected void onHit(RayTraceResult rayTraceResult) {
-        super.onHit(rayTraceResult);
+    protected void onHitEntity(EntityRayTraceResult entityRayTraceResult) {
+        super.onHitEntity(entityRayTraceResult);
         if (!level.isClientSide) {
-            List<Entity> nearEntities = level.getEntities(this, getBoundingBox().inflate(3));
-            for (Entity entity : nearEntities) {
-                if (entity instanceof LivingEntity) {
-                    entity.setSecondsOnFire(5);
-                }
+            Entity entity = entityRayTraceResult.getEntity();
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).addEffect(new EffectInstance(Effects.POISON, 30, 2));
             }
+            level.broadcastEntityEvent(this, (byte) 4);
+            remove();
+        }
+    }
+
+    @Override
+    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
+        super.onHitBlock(blockRayTraceResult);
+        if (!level.isClientSide) {
             level.broadcastEntityEvent(this, (byte) 3);
             remove();
-        } else {
-            Direction direction = (rayTraceResult instanceof BlockRayTraceResult)
-                    ? ((BlockRayTraceResult) rayTraceResult).getDirection().getOpposite()
-                    : null;
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.FLAME, level, position(), random, 0.3, 0.08, 16, direction);
         }
     }
 
@@ -55,16 +55,21 @@ public class ThrownBlazePowderEntity extends ProjectileItemEntity implements IRe
     @Override
     public void handleEntityEvent(byte eventID) {
         if (eventID == 3) {
-            IParticleData particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
+            IParticleData particleData = ParticleUtils.getItemParticle(null, getItem());
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
+        } else if (eventID == 4) {
+            ParticleUtils.spawnScatteringParticle(
+                    ParticleUtils.getItemParticle(null, getItem()),
+                    level, position(), random, 0.2, 0.08, 16
+            );
         }
     }
 
     @Override
     protected Item getDefaultItem() {
-        return Items.BLAZE_POWDER;
+        return Items.SPIDER_EYE;
     }
 
     @Override

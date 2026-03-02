@@ -18,15 +18,22 @@ public class StandardThrowable implements IThrowable {
     private static StandardThrowable INSTANCE = null;
     private static final ArrayList<Supplier<VanillaThrowableEntry>> vanillaThrowableRegistry = new ArrayList<>(Arrays.asList(
             () -> new VanillaThrowableEntry(ArrowItem.class, new ArrowThrowable()),
-            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.TNT), new TNTThrowable()),
             () -> new VanillaThrowableEntry(EggItem.class, new EggThrowable()),
             () -> new VanillaThrowableEntry(EnderPearlItem.class, new EnderPearlThrowable()),
             () -> new VanillaThrowableEntry(ExperienceBottleItem.class, new ExperienceBottleThrowable()),
             () -> new VanillaThrowableEntry(FireChargeItem.class, new FireChargeThrowable()),
             () -> new VanillaThrowableEntry(FireworkRocketItem.class, new FireworkRocketThrowable()),
             () -> new VanillaThrowableEntry(SnowballItem.class, new SnowballThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.TNT), new TNTThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.GLOWSTONE_DUST), new GlowstoneDustThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.BLAZE_POWDER), new BlazePowderThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.BLAZE_ROD), new BlazeRodThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.GUNPOWDER), new GunPowderThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.GHAST_TEAR), new GhastTearThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SLIME_BALL), new SlimeballThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.INK_SAC), new InkSacThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SPIDER_EYE), new SpiderEyeThrowable()),
+            () -> new VanillaThrowableEntry(BucketItem.class, new BucketThrowable()),
             () -> new VanillaThrowableEntry(ThrowablePotionItem.class, new ThrowablePotionThrowable()),
             () -> new VanillaThrowableEntry(TridentItem.class, new TridentThrowable()),
             () -> new VanillaThrowableEntry(SpawnEggItem.class, new SpawnEggThrowable()),
@@ -42,7 +49,7 @@ public class StandardThrowable implements IThrowable {
 
     /// Add throwable entry to standard throwable handler
     ///
-    /// Note : This have be used only in loading process and only once for single throwable,
+    /// Note : This have to be used only in loading process and only once for single throwable,
     /// and only for existing items.
     /// If you want to add custom throwable to new item, you should attach IThrowable capability to the item.
     public static void addThrowableHandler(Predicate<ItemStack> itemMatcher, IThrowable throwable) {

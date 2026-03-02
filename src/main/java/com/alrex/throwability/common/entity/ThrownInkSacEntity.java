@@ -11,6 +11,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -22,33 +24,35 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import java.util.List;
 
 @OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownBlazePowderEntity extends ProjectileItemEntity implements IRendersAsItem {
-    public ThrownBlazePowderEntity(EntityType<? extends ThrownBlazePowderEntity> entityType, World level) {
+public class ThrownInkSacEntity extends ProjectileItemEntity implements IRendersAsItem {
+    public ThrownInkSacEntity(EntityType<? extends ThrownInkSacEntity> entityType, World level) {
         super(entityType, level);
     }
 
-    public ThrownBlazePowderEntity(World level, LivingEntity thrower) {
-        super(EntityTypes.THROWN_BLAZE_POWDER.get(), thrower, level);
+    public ThrownInkSacEntity(World level, LivingEntity entity) {
+        super(EntityTypes.THROWN_INK_SAC.get(), entity, level);
     }
 
     @Override
     protected void onHit(RayTraceResult rayTraceResult) {
         super.onHit(rayTraceResult);
-        if (!level.isClientSide) {
-            List<Entity> nearEntities = level.getEntities(this, getBoundingBox().inflate(3));
-            for (Entity entity : nearEntities) {
-                if (entity instanceof LivingEntity) {
-                    entity.setSecondsOnFire(5);
-                }
-            }
-            level.broadcastEntityEvent(this, (byte) 3);
-            remove();
-        } else {
+
+        if (level.isClientSide) {
             Direction direction = (rayTraceResult instanceof BlockRayTraceResult)
                     ? ((BlockRayTraceResult) rayTraceResult).getDirection().getOpposite()
                     : null;
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.FLAME, level, position(), random, 0.3, 0.08, 16, direction);
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.SQUID_INK, level, position(), random, 0.3, 0.08, 16, direction);
+        } else {
+            List<Entity> nearEntities = level.getEntities(this, getBoundingBox().inflate(4));
+            for (Entity entity : nearEntities) {
+                if (entity instanceof LivingEntity) {
+                    ((LivingEntity) entity).addEffect(new EffectInstance(Effects.BLINDNESS, 150));
+                }
+            }
+            level.broadcastEntityEvent(this, (byte) 3);
         }
+
+        remove();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -63,12 +67,12 @@ public class ThrownBlazePowderEntity extends ProjectileItemEntity implements IRe
     }
 
     @Override
-    protected Item getDefaultItem() {
-        return Items.BLAZE_POWDER;
+    public IPacket<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    protected Item getDefaultItem() {
+        return Items.INK_SAC;
     }
 }

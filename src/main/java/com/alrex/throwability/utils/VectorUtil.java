@@ -1,6 +1,7 @@
 package com.alrex.throwability.utils;
 
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 
 import java.util.Random;
 
@@ -24,4 +25,12 @@ public class VectorUtil {
 		}
 		return vec;
 	}
+
+    public static Vector3d create3dFrom3i(Vector3i vec) {
+        return new Vector3d(vec.getX(), vec.getY(), vec.getZ());
+    }
+
+    public static Vector3d reflect(Vector3d in, Vector3d normal) {
+        return in.subtract(normal.scale(2. * normal.dot(in)));
+    }
 }
