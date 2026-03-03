@@ -57,7 +57,7 @@ public class ThrowUtil {
 		float random2 = 0.02F * thrower.getRandom().nextFloat();
 		return new Vector3d(
 				(-yawSin * pitchCos * 0.3F) + 0.5f * Math.cos(random) * (double) random2,
-				(-pitchSin * 0.3F + 0.05 + (thrower.getRandom().nextFloat() - thrower.getRandom().nextFloat()) * 0.05F),
+				(-pitchSin * 0.3F + (thrower.getRandom().nextFloat() - 0.5) * 0.075F),
 				(yawCos * pitchCos * 0.3F) + 0.5f * Math.sin(random) * (double) random2
 		);
 	}

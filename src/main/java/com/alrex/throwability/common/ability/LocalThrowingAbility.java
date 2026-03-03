@@ -9,13 +9,26 @@ import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class LocalThrowingAbility extends AbstractThrowingAbility {
     private final ClientPlayerEntity player;
     private int currentItemSlot = -1;
 
     public LocalThrowingAbility(ClientPlayerEntity player) {
         this.player = player;
+    }
+
+    public static ThrowType getCurrentThrowType() {
+        if (KeyBindings.getKeySpecialModifier().isDown()) {
+            return ThrowType.ONE_AS_ENTITY;
+        } else if (KeyBindings.getKeyAllModifier().isDown()) {
+            return ThrowType.ALL_AS_ITEM;
+        } else {
+            return ThrowType.ONE_AS_ITEM;
+        }
     }
 
     @Override
@@ -42,15 +55,7 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
                     }
                 } else if (charging) {
                     if (chargingTick > maxChargingTick / 5f) {
-                        ThrowType type;
-                        if (KeyBindings.getKeySpecialModifier().isDown()) {
-                            type = ThrowType.ONE_AS_ENTITY;
-                        } else if (KeyBindings.getKeyAllModifier().isDown()) {
-                            type = ThrowType.ALL_AS_ITEM;
-                        } else {
-                            type = ThrowType.ONE_AS_ITEM;
-                        }
-                        ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, type, chargingTick);
+                        ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, getCurrentThrowType(), chargingTick);
                     }
                     stopCharging();
                 }
