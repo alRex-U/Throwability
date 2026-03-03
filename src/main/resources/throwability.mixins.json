@@ -16,7 +16,6 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "common.EntityMixin",
     "common.FallingBlockEntityMixin"
   ]
 }
