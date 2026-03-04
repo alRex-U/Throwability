@@ -60,6 +60,10 @@ public class WeaponThrowable implements IThrowable {
 
     @Override
     public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
-        thrower.playSound(SoundEvents.WEAPON_THROW.get(), 1f, 1f);
+        if (type == ThrowType.ONE_AS_ENTITY) {
+            thrower.playSound(SoundEvents.WEAPON_THROW.get(), 1f, 1f);
+        } else {
+            IThrowable.super.onThrownOnClient(thrower, stack, type);
+        }
     }
 }

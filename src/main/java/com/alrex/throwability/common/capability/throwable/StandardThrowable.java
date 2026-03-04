@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class StandardThrowable implements IThrowable {
     private static StandardThrowable INSTANCE = null;
-    private static final ArrayList<Supplier<VanillaThrowableEntry>> vanillaThrowableRegistry = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<Supplier<VanillaThrowableEntry>> VANILLA_THROWABLE_REGISTRY = new ArrayList<>(Arrays.asList(
             () -> new VanillaThrowableEntry(ArrowItem.class, new ArrowThrowable()),
             () -> new VanillaThrowableEntry(EggItem.class, new EggThrowable()),
             () -> new VanillaThrowableEntry(EnderPearlItem.class, new EnderPearlThrowable()),
@@ -40,11 +40,12 @@ public class StandardThrowable implements IThrowable {
             () -> new VanillaThrowableEntry(BlockItem.class, new BlockThrowable()),
             () -> new VanillaThrowableEntry(WeaponThrowable::hasAttackDamage, new WeaponThrowable())
     ));
+    private static boolean REGISTRY_FREEZE = false;
 
     private final VanillaThrowableEntry[] vanillaThrowable;
 
     private StandardThrowable() {
-        vanillaThrowable = vanillaThrowableRegistry.stream().map(Supplier::get).toArray(VanillaThrowableEntry[]::new);
+        vanillaThrowable = VANILLA_THROWABLE_REGISTRY.stream().map(Supplier::get).toArray(VanillaThrowableEntry[]::new);
     }
 
     /// Add throwable entry to standard throwable handler
@@ -53,11 +54,27 @@ public class StandardThrowable implements IThrowable {
     /// and only for existing items.
     /// If you want to add custom throwable to new item, you should attach IThrowable capability to the item.
     public static void addThrowableHandler(Predicate<ItemStack> itemMatcher, IThrowable throwable) {
-        vanillaThrowableRegistry.add(() -> new VanillaThrowableEntry(itemMatcher, throwable));
+        if (REGISTRY_FREEZE)
+            throw new IllegalStateException("Try to register [" + throwable.getClass().getName() + "], but the registry is already freeze");
+        VANILLA_THROWABLE_REGISTRY.add(() -> new VanillaThrowableEntry(itemMatcher, throwable));
+    }
+
+    /// Add throwable entry to standard throwable handler, it's added with current the highest priority
+    ///
+    /// Note : This have to be used only in loading process and only once for single throwable,
+    /// and only for existing items.
+    /// If you want to add custom throwable to new item, you should attach IThrowable capability to the item.
+    public static void addThrowableHandlerHead(Predicate<ItemStack> itemMatcher, IThrowable throwable) {
+        if (REGISTRY_FREEZE)
+            throw new IllegalStateException("Try to register [" + throwable.getClass().getName() + "], but the registry is already freeze");
+        VANILLA_THROWABLE_REGISTRY.add(0, () -> new VanillaThrowableEntry(itemMatcher, throwable));
     }
 
     public static StandardThrowable getInstance() {
-        if (INSTANCE == null) INSTANCE = new StandardThrowable();
+        if (INSTANCE == null) {
+            INSTANCE = new StandardThrowable();
+            REGISTRY_FREEZE = true;
+        }
         return INSTANCE;
     }
 
