@@ -16,7 +16,9 @@ public class BlazeRodThrowable implements IThrowable {
         if (stack.getItem() == Items.BLAZE_ROD) {
             ThrownBlazeRodEntity entity = new ThrownBlazeRodEntity(thrower.level, thrower);
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+            double speedScale = 3.
+                    * ThrowUtil.getSpeedScale(thrower)
+                    * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 

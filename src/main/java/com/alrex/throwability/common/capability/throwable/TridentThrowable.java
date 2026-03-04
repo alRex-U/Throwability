@@ -23,7 +23,9 @@ public class TridentThrowable implements IThrowable {
                     thrower.level, thrower, stack
             );
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 4. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+            double speedScale = 4.
+                    * ThrowUtil.getSpeedScale(thrower)
+                    * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 

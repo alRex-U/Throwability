@@ -8,6 +8,8 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.item.*;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -60,6 +62,17 @@ public class ThrowUtil {
 				(-pitchSin * 0.3F + 0.02f + (thrower.getRandom().nextFloat() - 0.5) * 0.025F),
 				(yawCos * pitchCos * 0.3F) + 0.5f * Math.sin(random) * (double) random2
 		);
+	}
+
+	private static final double getSpeedScale$log_e3 = Math.log(3.);
+
+	public static double getSpeedScale(PlayerEntity thrower) {
+		EffectInstance effect = thrower.getEffect(Effects.DAMAGE_BOOST);
+		if (effect != null) {
+			return Math.log(effect.getAmplifier() + 4) / getSpeedScale$log_e3;
+		} else {
+			return 1.;
+		}
 	}
 
 	public static ItemEntity getItemEntity(ItemStack stack, World world, Vector3d pos) {

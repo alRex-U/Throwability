@@ -16,7 +16,9 @@ public class BucketThrowable implements IThrowable {
         if (stack.getItem() instanceof BucketItem) {
             ThrownBucketEntity entity = new ThrownBucketEntity(thrower.level, thrower, stack);
             Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+            double speedScale = 3.
+                    * ThrowUtil.getSpeedScale(thrower)
+                    * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 
