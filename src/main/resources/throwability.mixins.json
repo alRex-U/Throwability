@@ -10,6 +10,7 @@
     "client.AbstractClientPlayerEntityMixin",
     "client.ClientPlayerEntityMixin",
     "client.FirstPersonRendererMixin",
+    "client.GameRendererMixin",
     "client.MinecraftMixin",
     "client.PlayerModelMixin",
     "client.PlayerRendererMixin"
