@@ -148,6 +148,7 @@ public class StandardThrowable implements IThrowable {
                 return;
             }
         }
+        IThrowable.super.onThrownOnClient(thrower, stack, type);
     }
 
     private static class VanillaThrowableEntry {

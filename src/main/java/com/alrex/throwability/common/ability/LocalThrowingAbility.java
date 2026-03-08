@@ -8,6 +8,7 @@ import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -24,7 +25,7 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
     public static ThrowType getCurrentThrowType() {
         if (KeyBindings.getKeySpecialModifier().isDown()) {
             return ThrowType.ONE_AS_ENTITY;
-        } else if (KeyBindings.getKeyAllModifier().isDown()) {
+        } else if (Screen.hasControlDown()) {
             return ThrowType.ALL_AS_ITEM;
         } else {
             return ThrowType.ONE_AS_ITEM;
@@ -54,7 +55,7 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
                         startCharging();
                     }
                 } else if (charging) {
-                    if (chargingTick > maxChargingTick / 5f) {
+                    if (haveEnoughChargeTime()) {
                         ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, getCurrentThrowType(), chargingTick);
                     }
                     stopCharging();

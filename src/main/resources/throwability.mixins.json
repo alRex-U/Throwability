@@ -8,7 +8,9 @@
   "client": [
     "carryon.RenderEventsMixin",
     "client.AbstractClientPlayerEntityMixin",
+    "client.ClientPlayerEntityMixin",
     "client.FirstPersonRendererMixin",
+    "client.MinecraftMixin",
     "client.PlayerModelMixin",
     "client.PlayerRendererMixin"
   ],

@@ -42,4 +42,8 @@ public class AbstractThrowingAbility {
         charging = false;
         chargingTick = 0;
     }
+
+    public boolean haveEnoughChargeTime() {
+        return chargingTick > maxChargingTick / 5f;
+    }
 }
