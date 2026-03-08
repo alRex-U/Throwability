@@ -141,14 +141,14 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
-                entry.getThrowable().onThrownOnClient(thrower, stack, type);
+                entry.getThrowable().onThrownOnClient(thrower, stack, type, chargedTick);
                 return;
             }
         }
-        IThrowable.super.onThrownOnClient(thrower, stack, type);
+        IThrowable.super.onThrownOnClient(thrower, stack, type, chargedTick);
     }
 
     private static class VanillaThrowableEntry {

@@ -8,6 +8,7 @@ import net.minecraft.entity.Pose;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 
 public interface IThrowable {
     Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick);
@@ -26,8 +27,8 @@ public interface IThrowable {
         return itemEntity;
     }
 
-    default void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
-        thrower.playSound(SoundEvents.THROW.get(), 1f, 1f);
+    default void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+        thrower.playSound(SoundEvents.THROW.get(), MathHelper.clamp(chargedTick / (float) getMaxChargeTick(stack), 0f, 1f), 1f);
     }
 
     default boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {

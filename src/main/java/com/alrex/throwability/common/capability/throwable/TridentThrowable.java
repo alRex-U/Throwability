@@ -35,7 +35,7 @@ public class TridentThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
-        thrower.playSound(SoundEvents.TRIDENT_THROW, 1, 1);
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+        thrower.playSound(SoundEvents.TRIDENT_THROW, MathHelper.clamp(chargedTick / (float) getMaxChargeTick(stack), 0, 1f), 1);
     }
 }

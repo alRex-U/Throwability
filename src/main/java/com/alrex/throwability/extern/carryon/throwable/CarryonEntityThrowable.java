@@ -45,8 +45,8 @@ public class CarryonEntityThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type) {
-        IThrowable.super.onThrownOnClient(thrower, stack, type);
+    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+        IThrowable.super.onThrownOnClient(thrower, stack, type, chargedTick);
         thrower.getPersistentData().remove("carrySlot");
         ItemCarryonEntity.clearEntityData(stack);
     }
