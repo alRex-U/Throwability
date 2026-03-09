@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.eventhandle;
 
+import com.alrex.throwability.common.entity.ThrownWeaponEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -9,9 +10,10 @@ public class InteractionHandler {
     @SubscribeEvent
     public static void onInteractEntity(PlayerInteractEvent.EntityInteractSpecific event) {
         Entity entity = event.getTarget();
-        if (entity instanceof ItemEntity && !entity.removed) {
-            ItemEntity itemEntity = (ItemEntity) entity;
-            itemEntity.playerTouch(event.getPlayer());
+
+        if (entity.removed) return;
+        if (entity instanceof ItemEntity || entity instanceof ThrownWeaponEntity) {
+            entity.playerTouch(event.getPlayer());
         }
     }
 }

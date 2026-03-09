@@ -1,5 +1,6 @@
 package com.alrex.throwability.mixin.client;
 
+import com.alrex.throwability.common.entity.ThrownWeaponEntity;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.entity.Entity;
@@ -25,7 +26,9 @@ public abstract class GameRendererMixin implements IResourceManagerReloadListene
             ItemStack mainHandItem = ((ClientPlayerEntity) cameraEntity).getItemInHand(Hand.MAIN_HAND);
             if (mainHandItem.isEmpty()) {
                 return ProjectileHelper.getEntityHitResult(cameraEntity, eyePosition, viewVector, availableArea,
-                        (entity) -> entity instanceof ItemEntity || entityPredicate.test(entity),
+                        (entity) -> entityPredicate.test(entity)
+                                || entity instanceof ItemEntity
+                                || entity instanceof ThrownWeaponEntity,
                         pickRange
                 );
             }
