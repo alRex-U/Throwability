@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.common.model.TransformationHelper;
 
 public class ThrownWeaponRenderer extends EntityRenderer<ThrownWeaponEntity> {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/arrow");
@@ -33,11 +34,13 @@ public class ThrownWeaponRenderer extends EntityRenderer<ThrownWeaponEntity> {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         matrixStack.pushPose();
         {
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTick, thrownWeaponEntity.yRotO, thrownWeaponEntity.yRot) - 90f));
-            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTick, thrownWeaponEntity.xRotO, thrownWeaponEntity.xRot) - 45f));
             IBakedModel itemModel = itemRenderer.getModel(itemStack, thrownWeaponEntity.level, null);
+            matrixStack.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTick, thrownWeaponEntity.yRotO, thrownWeaponEntity.yRot) + 180f));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(MathHelper.lerp(partialTick, thrownWeaponEntity.xRotO, thrownWeaponEntity.xRot) - 90f + 15f));
+            matrixStack.mulPose(TransformationHelper.quatFromXYZ(itemModel.getTransforms().thirdPersonRightHand.rotation, true));
             itemRenderer.render(itemStack, ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, packedLight, OverlayTexture.NO_OVERLAY, itemModel);
         }
         matrixStack.popPose();
+        super.render(thrownWeaponEntity, p_225623_2_, partialTick, matrixStack, renderTypeBuffer, packedLight);
     }
 }
