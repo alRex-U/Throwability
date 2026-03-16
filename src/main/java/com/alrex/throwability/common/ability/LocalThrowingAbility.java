@@ -1,5 +1,6 @@
 package com.alrex.throwability.common.ability;
 
+import com.alrex.throwability.ThrowabilityConfig;
 import com.alrex.throwability.client.input.KeyBindings;
 import com.alrex.throwability.common.capability.Capabilities;
 import com.alrex.throwability.common.capability.IThrowable;
@@ -23,7 +24,7 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
     }
 
     public static ThrowType getCurrentThrowType() {
-        if (KeyBindings.getKeySpecialModifier().isDown()) {
+        if (ThrowabilityConfig.Client.ENTITY_THROW_CONTROL.get().isActive()) {
             return ThrowType.ONE_AS_ENTITY;
         } else if (Screen.hasControlDown()) {
             return ThrowType.ALL_AS_ITEM;

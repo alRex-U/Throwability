@@ -2,11 +2,13 @@ package com.alrex.throwability.client.input;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class KeyRecorder {
 	private static final KeyState keyThrow = new KeyState();
 	private static final KeyState keyDrop = new KeyState();
+	private static final KeyState keySpecialThrow = new KeyState();
 
 	public static KeyState getStateThrow() {
 		return keyThrow;
@@ -16,11 +18,16 @@ public class KeyRecorder {
 		return keyDrop;
 	}
 
-	@SubscribeEvent
+	public static KeyState getStateSpecialThrow() {
+		return keySpecialThrow;
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.START) return;
 		record(KeyBindings.getKeyThrow(), keyThrow);
 		record(KeyBindings.getKeyDropItem(), keyDrop);
+		record(KeyBindings.getKeySpecialModifier(), keySpecialThrow);
 	}
 
 	private static void record(KeyBinding keyBinding, KeyState state) {

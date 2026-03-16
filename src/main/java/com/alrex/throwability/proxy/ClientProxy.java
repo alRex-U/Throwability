@@ -46,7 +46,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void onCreated() {
-		MinecraftForge.EVENT_BUS.register(new TickEventHandler());
+		MinecraftForge.EVENT_BUS.register(TickEventHandler.class);
 		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(KeyBindings.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(Capabilities.class);
