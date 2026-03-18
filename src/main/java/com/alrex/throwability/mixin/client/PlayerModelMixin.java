@@ -1,8 +1,8 @@
 package com.alrex.throwability.mixin.client;
 
-import com.alrex.throwability.client.animation.PlayerModelTransformer;
-import com.alrex.throwability.client.animation.ThrowabilityAnimation;
-import com.alrex.throwability.common.capability.IThrow;
+import com.alrex.throwability.client.animation.AnimationHost;
+import com.alrex.throwability.client.animation.IAnimationHostProvider;
+import com.alrex.throwability.client.animation.PlayerModelAnimator;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -20,46 +20,42 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
 	@Shadow
 	@Final
 	private boolean slim;
-	private PlayerModelTransformer transformer = null;
 
-	public PlayerModelMixin(ModelPart p_170677_) {
-		super(p_170677_);
-	}
+    public PlayerModelMixin(ModelPart p_170677_) {
+        super(p_170677_);
+    }
 
-	@Inject(method = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("HEAD"))
+    @Inject(
+            method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V",
+            at = @At("HEAD"), cancellable = true
+    )
 	protected void onSetupAnimHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
-		if (!(entity instanceof Player)) return;
-		PlayerModel model = (PlayerModel) (Object) this;
-		Player player = (Player) entity;
+        if (!(entity instanceof Player player)) return;
+        if (!(player instanceof IAnimationHostProvider)) return;
+        var animationHost = ((IAnimationHostProvider) player).getAnimationHost();
 
-		transformer = new PlayerModelTransformer(
-				player,
-				model,
-				slim,
-				ageInTicks,
-				limbSwing,
-				limbSwingAmount,
-				netHeadYaw,
-				headPitch
-		);
-		transformer.reset();
-		transformer.copyFromBodyToWear();
+        if (animationHost.shouldStopVanillaModelAnimation(player)) {
+            var model = (PlayerModel<?>) (Object) this;
+            PlayerModelAnimator animator = new PlayerModelAnimator(
+                    player, model, slim, ageInTicks, limbSwing, limbSwingAmount, netHeadYaw, headPitch
+            );
+            animationHost.animateModel(animator);
+            animator.copyFromBodyToWear();
+            info.cancel();
+        }
 	}
 
-	@Inject(method = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
 	protected void onSetupAnimTail(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo info) {
-		if (!(entity instanceof Player)) return;
-		Player player = (Player) entity;
-		IThrow iThrow = IThrow.get(player);
-		if (iThrow == null) {
-			transformer = null;
-			return;
-		}
+        if (!(entity instanceof Player player)) return;
+        if (!(player instanceof IAnimationHostProvider)) return;
+        AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
 
-		if (transformer != null) {
-			ThrowabilityAnimation.animatePost(player, iThrow, transformer);
-			transformer.copyFromBodyToWear();
-			transformer = null;
-		}
+        var model = (PlayerModel<?>) (Object) this;
+        PlayerModelAnimator animator = new PlayerModelAnimator(
+                player, model, slim, ageInTicks, limbSwing, limbSwingAmount, netHeadYaw, headPitch
+        );
+        animationHost.animateModel(animator);
+        animator.copyFromBodyToWear();
 	}
 }

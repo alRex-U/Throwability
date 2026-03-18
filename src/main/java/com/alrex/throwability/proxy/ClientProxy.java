@@ -1,12 +1,12 @@
 package com.alrex.throwability.proxy;
 
-import com.alrex.throwability.client.animation.ThrowabilityAnimation;
 import com.alrex.throwability.client.hud.ThrowPowerMeter;
 import com.alrex.throwability.client.input.KeyBindings;
 import com.alrex.throwability.client.input.KeyRecorder;
 import com.alrex.throwability.common.capability.Capabilities;
-import com.alrex.throwability.common.event.EventAttachCapability;
-import com.alrex.throwability.common.logic.Processor;
+import com.alrex.throwability.common.eventhandle.InputHandler;
+import com.alrex.throwability.common.eventhandle.TickEventHandler;
+import com.alrex.throwability.common.eventhandle.ToolTipEventHandler;
 import com.alrex.throwability.common.network.ItemThrowMessage;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,13 +38,14 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
-		eventBus.register(ThrowabilityAnimation.class);
+		super.registerHandlers(eventBus);
+		eventBus.register(InputHandler.class);
+		eventBus.register(ToolTipEventHandler.class);
 	}
 
 	@Override
 	public void onCreated() {
-		MinecraftForge.EVENT_BUS.register(new Processor());
-		MinecraftForge.EVENT_BUS.register(new EventAttachCapability());
+		MinecraftForge.EVENT_BUS.register(TickEventHandler.class);
 		MinecraftForge.EVENT_BUS.register(KeyRecorder.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(KeyBindings.class);
 		FMLJavaModLoadingContext.get().getModEventBus().register(Capabilities.class);

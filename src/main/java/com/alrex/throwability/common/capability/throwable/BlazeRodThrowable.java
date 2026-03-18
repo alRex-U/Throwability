@@ -1,0 +1,28 @@
+package com.alrex.throwability.common.capability.throwable;
+
+import com.alrex.throwability.common.capability.IThrowable;
+import com.alrex.throwability.common.entity.ThrownBlazeRodEntity;
+import com.alrex.throwability.utils.ThrowUtil;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+public class BlazeRodThrowable implements IThrowable {
+    @Override
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
+        if (stack.getItem() == Items.BLAZE_ROD) {
+            ThrownBlazeRodEntity entity = new ThrownBlazeRodEntity(thrower.level, thrower);
+            var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            double speedScale = 3.
+                    * ThrowUtil.getSpeedScale(thrower)
+                    * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+
+            entity.setDeltaMovement(throwVec.scale(speedScale));
+
+            return entity;
+        }
+        return throwAsItem(thrower, stack, chargedTick);
+    }
+}

@@ -1,0 +1,78 @@
+{
+  "throwability.throw": {
+    "subtitle": "throwability.subtitle.throw",
+    "sounds": [
+      {
+        "name": "entity/player/attack/sweep1",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep2",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep3",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep4",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep5",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep6",
+        "volume": 0.6,
+        "pitch": 0.7
+      },
+      {
+        "name": "entity/player/attack/sweep7",
+        "volume": 0.6,
+        "pitch": 0.7
+      }
+    ]
+  },
+  "throwability.weapon.throw": {
+    "subtitle": "throwability.subtitle.weapon.throw",
+    "sounds": [
+      "item/trident/throw1",
+      "item/trident/throw2"
+    ]
+  },
+  "throwability.weapon.hit.entity": {
+    "subtitle": "throwability.subtitle.weapon.hit.entity",
+    "sounds": [
+      "item/trident/pierce1",
+      "item/trident/pierce2",
+      "item/trident/pierce3"
+    ]
+  },
+  "throwability.weapon.hit.block": {
+    "subtitle": "throwability.subtitle.weapon.hit.block",
+    "sounds": [
+      {
+        "name": "item/trident/ground_impact1",
+        "volume": 0.9
+      },
+      {
+        "name": "item/trident/ground_impact2",
+        "volume": 0.9
+      },
+      {
+        "name": "item/trident/ground_impact3",
+        "volume": 0.9
+      },
+      {
+        "name": "item/trident/ground_impact4",
+        "volume": 0.9
+      }
+    ]
+  }
+}

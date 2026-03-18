@@ -1,11 +1,11 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://repo.spongepowered.org/maven' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
@@ -17,12 +17,16 @@ apply plugin: 'maven-publish'
 compileJava.options.encoding("UTF-8")
 compileTestJava.options.encoding("UTF-8")
 
+repositories {
+    maven { url = 'https://www.cursemaven.com' }
+}
+
 mixin {
     add sourceSets.main, 'throwability.refmap.json'
     config 'throwability.mixins.json'
 }
 
-version = "${mc_version}-${major_mod}.${major_api}.${minor}.${patch}-${versionStatus.toString()}"
+version = "$mc_version-$mod_version"
 group = 'com.alrex.throwability' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Throwability'
 
@@ -31,6 +35,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
     mappings channel: 'official', version: "${mc_version}"
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     runs {
         client {
             workingDirectory project.file('run')
@@ -85,10 +90,37 @@ minecraft {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${forge_version}"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
 
+    compileOnly fg.deobf("curse.maven:Naturot-1460728:${naturot_file_id}")
+    runtimeOnly fg.deobf("curse.maven:Naturot-1460728:${naturot_file_id}")
+
+    runtimeOnly fg.deobf("curse.maven:CarryOn-274259:${CarryOn_file_id}")
+    compileOnly fg.deobf("curse.maven:CarryOn-274259:${CarryOn_file_id}")
+}
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version      : mc_version,
+            minecraft_version_range: mc_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : "Naturot",
+            mod_license            : "GNU General Public License Version 3",
+            mod_version            : mod_version,
+            mod_authors            : "alRex-U",
+            naturot_version_range: naturot_version_range,
+            carryon_version_range: carryon_version_range
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
