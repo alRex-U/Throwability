@@ -16,6 +16,7 @@ public class EntityRenderers {
         register(EntityTypes.THROWN_GUNPOWDER.get(), ThrownItemRenderer::new);
         register(EntityTypes.THROWN_SLIMEBALL.get(), ThrownItemRenderer::new);
         register(EntityTypes.THROWN_INK_SAC.get(), ThrownItemRenderer::new);
+        register(EntityTypes.THROWN_GLOW_INK_SAC.get(), ThrownItemRenderer::new);
         register(EntityTypes.THROWN_BUCKET.get(), ThrownItemRenderer::new);
         register(EntityTypes.THROWN_SPIDER_EYE.get(), ThrownItemRenderer::new);
     }

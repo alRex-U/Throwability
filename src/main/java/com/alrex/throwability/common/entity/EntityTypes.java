@@ -109,6 +109,15 @@ public class EntityTypes {
                     .updateInterval(10)
                     .build("thrown_spider_eye")
     );
+    public static RegistryObject<EntityType<ThrownGlowInkSacEntity>> THROWN_GLOW_INK_SAC = REGISTRY.register(
+            "thrown_glow_ink_sac",
+            () -> EntityType.Builder
+                    .of((EntityType.EntityFactory<ThrownGlowInkSacEntity>) ThrownGlowInkSacEntity::new, MobCategory.MISC)
+                    .sized(0.25f, 0.25f)
+                    .clientTrackingRange(4)
+                    .updateInterval(10)
+                    .build("thrown_glow_ink_sac")
+    );
 
     public static void register(IEventBus bus) {
         REGISTRY.register(bus);

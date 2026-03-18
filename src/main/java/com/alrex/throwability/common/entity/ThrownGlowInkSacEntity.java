@@ -18,23 +18,25 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 
-public class ThrownGlowstoneDustEntity extends ThrowableItemProjectile {
-    public ThrownGlowstoneDustEntity(EntityType<? extends ThrownGlowstoneDustEntity> entityType, Level level) {
+public class ThrownGlowInkSacEntity extends ThrowableItemProjectile {
+    public ThrownGlowInkSacEntity(EntityType<? extends ThrownGlowInkSacEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public ThrownGlowstoneDustEntity(Level level, LivingEntity thrower) {
-        super(EntityTypes.THROWN_GLOWSTONE_DUST.get(), thrower, level);
+    public ThrownGlowInkSacEntity(Level level, LivingEntity entity) {
+        super(EntityTypes.THROWN_GLOW_INK_SAC.get(), entity, level);
     }
 
     @Override
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
+
         if (!level.isClientSide) {
             var nearEntities = level.getEntities(this, getBoundingBox().inflate(4));
             for (var entity : nearEntities) {
                 if (entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200));
+                    livingEntity.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 150));
+                    livingEntity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 150));
                 }
             }
             Direction direction = (hitResult instanceof BlockHitResult blockHitResult)
@@ -49,9 +51,9 @@ public class ThrownGlowstoneDustEntity extends ThrowableItemProjectile {
     @Override
     public void handleEntityEvent(byte eventID) {
         if (eventID <= Direction.values().length) {
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.END_ROD, level, position(), random, 0.3, 0.08, 12,
-                    eventID == Direction.values().length ? null : Direction.values()[eventID]);
             var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.GLOW_SQUID_INK, level, position(), random, 0.3, 0.08, 16,
+                    eventID == Direction.values().length ? null : Direction.values()[eventID]);
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
@@ -59,12 +61,12 @@ public class ThrownGlowstoneDustEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected Item getDefaultItem() {
-        return Items.GLOWSTONE_DUST;
+    public Packet<?> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    protected Item getDefaultItem() {
+        return Items.GLOW_INK_SAC;
     }
 }

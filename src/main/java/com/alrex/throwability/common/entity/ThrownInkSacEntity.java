@@ -31,19 +31,17 @@ public class ThrownInkSacEntity extends ThrowableItemProjectile {
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
 
-        if (level.isClientSide) {
-            Direction direction = (hitResult instanceof BlockHitResult blockHitResult)
-                    ? blockHitResult.getDirection().getOpposite()
-                    : null;
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.SQUID_INK, level, position(), random, 0.3, 0.08, 16, direction);
-        } else {
+        if (!level.isClientSide) {
             var nearEntities = level.getEntities(this, getBoundingBox().inflate(4));
             for (var entity : nearEntities) {
                 if (entity instanceof LivingEntity livingEntity) {
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
                 }
             }
-            level.broadcastEntityEvent(this, (byte) 3);
+            Direction direction = (hitResult instanceof BlockHitResult blockHitResult)
+                    ? blockHitResult.getDirection().getOpposite()
+                    : null;
+            level.broadcastEntityEvent(this, (byte) (direction == null ? Direction.values().length : direction.ordinal()));
             discard();
         }
     }
@@ -51,7 +49,9 @@ public class ThrownInkSacEntity extends ThrowableItemProjectile {
     @OnlyIn(Dist.CLIENT)
     @Override
     public void handleEntityEvent(byte eventID) {
-        if (eventID == 3) {
+        if (eventID <= Direction.values().length) {
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.SQUID_INK, level, position(), random, 0.3, 0.08, 16,
+                    eventID == Direction.values().length ? null : Direction.values()[eventID]);
             var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);

@@ -1,6 +1,7 @@
 package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.client.particle.ParticleUtils;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.EntityType;
@@ -34,20 +35,20 @@ public class ThrownBlazePowderEntity extends ThrowableItemProjectile {
                     entity.setSecondsOnFire(5);
                 }
             }
-            level.broadcastEntityEvent(this, (byte) 3);
-            discard();
-        } else {
-            var direction = (hitResult instanceof BlockHitResult blockHitResult)
+            Direction direction = (hitResult instanceof BlockHitResult blockHitResult)
                     ? blockHitResult.getDirection().getOpposite()
                     : null;
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.FLAME, level, position(), random, 0.3, 0.08, 16, direction);
+            level.broadcastEntityEvent(this, (byte) (direction == null ? Direction.values().length : direction.ordinal()));
+            discard();
         }
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
     public void handleEntityEvent(byte eventID) {
-        if (eventID == 3) {
+        if (eventID <= Direction.values().length) {
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.FLAME, level, position(), random, 0.3, 0.08, 16,
+                    eventID == Direction.values().length ? null : Direction.values()[eventID]);
             var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);

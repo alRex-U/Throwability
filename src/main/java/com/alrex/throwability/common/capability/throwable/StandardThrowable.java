@@ -32,6 +32,7 @@ public class StandardThrowable implements IThrowable {
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.GHAST_TEAR), new GhastTearThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SLIME_BALL), new SlimeballThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.INK_SAC), new InkSacThrowable()),
+            () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.GLOW_INK_SAC), new GlowInkSacThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SPIDER_EYE), new SpiderEyeThrowable()),
             () -> new VanillaThrowableEntry(BucketItem.class, new DispensibleContainerThrowable()),
             () -> new VanillaThrowableEntry(SolidBucketItem.class, new DispensibleContainerThrowable()),
