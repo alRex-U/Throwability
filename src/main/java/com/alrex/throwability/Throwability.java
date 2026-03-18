@@ -1,16 +1,23 @@
 package com.alrex.throwability;
 
+import com.alrex.throwability.client.animation.Animations;
+import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
+import com.alrex.throwability.client.render.entity.EntityRenderers;
+import com.alrex.throwability.common.entity.EntityTypes;
+import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.proxy.ClientProxy;
 import com.alrex.throwability.proxy.CommonProxy;
 import com.alrex.throwability.proxy.ServerProxy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -34,10 +41,15 @@ public class Throwability {
 	);
 
 	public Throwability() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+		IEventBus fmlEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		fmlEventBus.addListener(this::setup);
+		fmlEventBus.addListener(this::doClientStuff);
+		fmlEventBus.addListener(this::onLoadCompleted);
+
+		SoundEvents.register(fmlEventBus);
+		EntityTypes.register(fmlEventBus);
+
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ThrowabilityConfig.Client.BUILT_CONFIG);
 
 		PROXY.onCreated();
 	}
@@ -48,12 +60,11 @@ public class Throwability {
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
+		Animations.register(ThrowingAnimation.class, ThrowingAnimation::new);
+		EntityRenderers.register(Minecraft.getInstance().getEntityRenderDispatcher());
 	}
 
-	private void enqueueIMC(final InterModEnqueueEvent event) {
+	private void onLoadCompleted(final FMLLoadCompleteEvent event) {
+		AdditionalMods.init();
 	}
-
-	private void processIMC(final InterModProcessEvent event) {
-	}
-
 }

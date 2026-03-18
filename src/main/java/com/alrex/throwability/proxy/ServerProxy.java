@@ -1,12 +1,10 @@
 package com.alrex.throwability.proxy;
 
 import com.alrex.throwability.common.capability.Capabilities;
-import com.alrex.throwability.common.event.EventAttachCapability;
 import com.alrex.throwability.common.network.ItemThrowMessage;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -33,12 +31,11 @@ public class ServerProxy extends CommonProxy {
 
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
-
+		super.registerHandlers(eventBus);
 	}
 
 	@Override
 	public void onCreated() {
-		MinecraftForge.EVENT_BUS.register(new EventAttachCapability());
 		FMLJavaModLoadingContext.get().getModEventBus().register(Capabilities.class);
 	}
 }

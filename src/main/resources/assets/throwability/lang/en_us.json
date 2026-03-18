@@ -2,5 +2,8 @@
   "key.throwability.throw": "Throw",
   "key.throwability.modifier.all": "Modifier Throw All",
   "key.throwability.modifier.special": "Modifier Throw As Specific Entity",
-  "key.categories.throwability": "Throwability"
+  "key.categories.throwability": "Throwability",
+  "throwability.item.throwable": "Throwable",
+  "death.attack.throwability.thrown_weapon": "%1$s was knocked down by %2$s",
+  "death.attack.throwability.thrown_weapon.item": "%1$s was knocked down by %2$s with %3$s"
 }

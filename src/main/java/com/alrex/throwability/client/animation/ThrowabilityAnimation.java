@@ -11,13 +11,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ThrowabilityAnimation {
+	/*
 	public static void animatePost(
 			Player player,
 			IThrow iThrow,
 			PlayerModelTransformer transformer
 	) {
-		if (!iThrow.isCharging()) return;
-		float phase = MathUtil.lerp(iThrow.getOldPower(), iThrow.getChargingPower(), transformer.getPartialTick()) / iThrow.getMaxPower();
+		if (!throwingAbility.isCharging()) return;
+		float phase = MathHelper.clamp(throwingAbility.getChargingTick()+transformer.getPartialTick()/throwingAbility.getMaxChargeTick(),0,1);
 		float factor = 1 - MathUtil.squaring(1 - phase);
 		if (player.getMainArm() == HumanoidArm.RIGHT) {
 			transformer
@@ -49,6 +50,9 @@ public class ThrowabilityAnimation {
 					);
 		}
 	}
+	public static void rotate(){
+
+	}
 
 	@SubscribeEvent
 	public static void onRenderTick(TickEvent.RenderTickEvent event) {
@@ -65,4 +69,6 @@ public class ThrowabilityAnimation {
 			}
 		}
 	}
+
+	 */
 }

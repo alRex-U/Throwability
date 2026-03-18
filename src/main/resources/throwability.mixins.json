@@ -6,7 +6,14 @@
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.8",
   "client": [
-    "client.PlayerModelMixin"
+    "carryon.RenderEventsMixin",
+    "client.AbstractClientPlayerEntityMixin",
+    "client.ClientPlayerEntityMixin",
+    "client.FirstPersonRendererMixin",
+    "client.GameRendererMixin",
+    "client.MinecraftMixin",
+    "client.PlayerModelMixin",
+    "client.PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

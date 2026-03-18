@@ -2,19 +2,32 @@ package com.alrex.throwability.client.input;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class KeyRecorder {
 	private static final KeyState keyThrow = new KeyState();
+	private static final KeyState keyDrop = new KeyState();
+	private static final KeyState keySpecialThrow = new KeyState();
 
 	public static KeyState getStateThrow() {
 		return keyThrow;
 	}
 
-	@SubscribeEvent
+	public static KeyState getStateDrop() {
+		return keyDrop;
+	}
+
+	public static KeyState getStateSpecialThrow() {
+		return keySpecialThrow;
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void onClientTick(TickEvent.ClientTickEvent event) {
 		if (event.phase != TickEvent.Phase.START) return;
 		record(KeyBindings.getKeyThrow(), keyThrow);
+		record(KeyBindings.getKeyDropItem(), keyDrop);
+		record(KeyBindings.getKeySpecialModifier(), keySpecialThrow);
 	}
 
 	private static void record(KeyMapping keyBinding, KeyState state) {
@@ -23,7 +36,9 @@ public class KeyRecorder {
 		if (keyBinding.isDown()) {
 			state.tickKeyDown++;
 			state.tickNotKeyDown = 0;
+			state.justReleased = false;
 		} else {
+			state.justReleased = (state.tickKeyDown > 0);
 			state.tickKeyDown = 0;
 			state.tickNotKeyDown++;
 		}
@@ -32,6 +47,7 @@ public class KeyRecorder {
 	public static class KeyState {
 		private boolean pressed = false;
 		private boolean doubleTapped = false;
+		private boolean justReleased = false;
 		private int tickKeyDown = 0;
 		private int tickNotKeyDown = 0;
 
@@ -41,6 +57,10 @@ public class KeyRecorder {
 
 		public boolean isDoubleTapped() {
 			return doubleTapped;
+		}
+
+		public boolean isJustReleased() {
+			return justReleased;
 		}
 
 		public int getTickKeyDown() {
