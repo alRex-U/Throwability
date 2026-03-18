@@ -8,18 +8,18 @@ import com.alrex.throwability.common.capability.throwable.StandardThrowable;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class LocalThrowingAbility extends AbstractThrowingAbility {
-    private final ClientPlayerEntity player;
+    private final LocalPlayer player;
     private int currentItemSlot = -1;
 
-    public LocalThrowingAbility(ClientPlayerEntity player) {
+    public LocalThrowingAbility(LocalPlayer player) {
         this.player = player;
     }
 
@@ -37,11 +37,11 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
     public void tick() {
         super.tick();
 
-        if (currentItemSlot != player.inventory.selected || Minecraft.getInstance().screen != null) {
+        if (currentItemSlot != player.getInventory().selected || Minecraft.getInstance().screen != null) {
             stopCharging();
-            currentItemSlot = player.inventory.selected;
+            currentItemSlot = player.getInventory().selected;
         } else {
-            ItemStack selected = player.inventory.getSelected();
+            ItemStack selected = player.getInventory().getSelected();
             if (selected.isEmpty()) {
                 stopCharging();
             } else {
@@ -57,7 +57,7 @@ public class LocalThrowingAbility extends AbstractThrowingAbility {
                     }
                 } else if (charging) {
                     if (haveEnoughChargeTime()) {
-                        ThrowUtil.throwItem(player, player.inventory.selected, selected, throwable, getCurrentThrowType(), chargingTick);
+                        ThrowUtil.throwItem(player, player.getInventory().selected, selected, throwable, getCurrentThrowType(), chargingTick);
                     }
                     stopCharging();
                 }

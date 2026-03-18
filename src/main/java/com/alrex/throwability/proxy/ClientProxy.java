@@ -1,6 +1,5 @@
 package com.alrex.throwability.proxy;
 
-import com.alrex.throwability.client.animation.ThrowabilityAnimation;
 import com.alrex.throwability.client.hud.ThrowPowerMeter;
 import com.alrex.throwability.client.input.KeyBindings;
 import com.alrex.throwability.client.input.KeyRecorder;
@@ -40,10 +39,8 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void registerHandlers(IEventBus eventBus) {
 		super.registerHandlers(eventBus);
-		eventBus.register(ThrowabilityAnimation.class);
 		eventBus.register(InputHandler.class);
 		eventBus.register(ToolTipEventHandler.class);
-		eventBus.register(new ThrowPowerMeter());
 	}
 
 	@Override

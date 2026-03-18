@@ -2,27 +2,27 @@ package com.alrex.throwability.common.capability.throwable;
 
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.EggEntity;
-import net.minecraft.item.EggItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.item.EggItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 public class EggThrowable implements IThrowable {
     @Override
-    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof EggItem) {
-            EggEntity entity = new EggEntity(
+            var entity = new ThrownEgg(
                     thrower.level, thrower
             );
-            Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4.
                     * ThrowUtil.getSpeedScale(thrower)
-                    * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+                    * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 

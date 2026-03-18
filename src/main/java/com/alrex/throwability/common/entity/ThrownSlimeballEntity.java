@@ -2,36 +2,29 @@ package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.client.particle.ParticleUtils;
 import com.alrex.throwability.utils.VectorUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.network.NetworkHooks;
 
-@OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownSlimeballEntity extends ProjectileItemEntity implements IRendersAsItem {
+public class ThrownSlimeballEntity extends ThrowableItemProjectile {
     private int boundingCount = 0;
 
-    public ThrownSlimeballEntity(EntityType<? extends ThrownSlimeballEntity> entityType, World level) {
+    public ThrownSlimeballEntity(EntityType<? extends ThrownSlimeballEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public ThrownSlimeballEntity(World level, LivingEntity entity) {
+    public ThrownSlimeballEntity(Level level, LivingEntity entity) {
         super(EntityTypes.THROWN_SLIMEBALL.get(), entity, level);
     }
 
@@ -46,16 +39,16 @@ public class ThrownSlimeballEntity extends ProjectileItemEntity implements IRend
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
-        super.onHitBlock(blockRayTraceResult);
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         boundingCount++;
         if (boundingCount > 3) {
             if (!level.isClientSide) {
                 level.broadcastEntityEvent(this, (byte) 3);
-                remove();
+                discard();
             }
         } else {
-            Vector3d normal = VectorUtil.create3dFrom3i(blockRayTraceResult.getDirection().getNormal());
+            var normal = VectorUtil.create3dFrom3i(blockHitResult.getDirection().getNormal());
             setDeltaMovement(VectorUtil.reflect(getDeltaMovement(), normal).scale(0.9));
         }
     }
@@ -63,7 +56,7 @@ public class ThrownSlimeballEntity extends ProjectileItemEntity implements IRend
     @Override
     public void handleEntityEvent(byte eventID) {
         if (eventID == 3) {
-            IParticleData particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
+            var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
@@ -76,24 +69,24 @@ public class ThrownSlimeballEntity extends ProjectileItemEntity implements IRend
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult entityRayTraceResult) {
-        super.onHitEntity(entityRayTraceResult);
-        Entity entity = entityRayTraceResult.getEntity();
+    protected void onHitEntity(EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
+        var entity = entityHitResult.getEntity();
         if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 200, 4));
+            ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 4));
             level.broadcastEntityEvent(this, (byte) 4);
-            remove();
+            discard();
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Bound", boundingCount);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         boundingCount = tag.getInt("Bound");
     }
@@ -104,7 +97,7 @@ public class ThrownSlimeballEntity extends ProjectileItemEntity implements IRend
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

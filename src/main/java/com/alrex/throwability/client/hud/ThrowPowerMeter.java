@@ -6,69 +6,61 @@ import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.alrex.throwability.common.ability.IThrowabilityProvider;
 import com.alrex.throwability.common.ability.LocalThrowingAbility;
 import com.alrex.throwability.common.ability.ThrowType;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.PointOfView;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
 
 @OnlyIn(Dist.CLIENT)
-public class ThrowPowerMeter extends AbstractGui {
+public class ThrowPowerMeter extends GuiComponent implements IIngameOverlay {
 	private static final ResourceLocation ICON_LOCATION = new ResourceLocation(Throwability.MOD_ID, "textures/gui/gui_icon.png");
 
-	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
-		Minecraft mc = Minecraft.getInstance();
-		PlayerEntity player = mc.player;
-		if (player == null || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE) return;
-		if (mc.options.getCameraType() != PointOfView.FIRST_PERSON) return;
+	public static void blitWithColor(PoseStack matrixStack, int x, int y, int xTex, int yTex, int width, int height, int texWidth, int texHeight, int r, int g, int b, int a) {
+		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+		float sX = x, sY = y, eX = x + width, eY = y + height;
+		float sXTex = xTex / (float) texWidth, sYTex = yTex / (float) texHeight, eXTex = (xTex + width) / (float) texWidth, eYTex = (yTex + height) / (float) texHeight;
+		Matrix4f pose = matrixStack.last().pose();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+		bufferBuilder.vertex(pose, sX, eY, 0f).color(r, g, b, a).uv(sXTex, eYTex).endVertex();
+		bufferBuilder.vertex(pose, eX, eY, 0f).color(r, g, b, a).uv(eXTex, eYTex).endVertex();
+		bufferBuilder.vertex(pose, eX, sY, 0f).color(r, g, b, a).uv(eXTex, sYTex).endVertex();
+		bufferBuilder.vertex(pose, sX, sY, 0f).color(r, g, b, a).uv(sXTex, sYTex).endVertex();
+		bufferBuilder.end();
+		BufferUploader.end(bufferBuilder);
+	}
+
+	@Override
+	public void render(ForgeIngameGui forgeIngameGui, PoseStack poseStack, float partialTick, int width, int height) {
+		var mc = Minecraft.getInstance();
+		Player player = mc.player;
+		if (mc.options.getCameraType() != CameraType.FIRST_PERSON) return;
         if (!(player instanceof IThrowabilityProvider)) return;
         AbstractThrowingAbility throwingAbility = ((IThrowabilityProvider) player).getThrowAbility();
         if (!throwingAbility.isCharging()) return;
 
 		RenderSystem.disableBlend();
 
-		renderMeter(event.getMatrixStack(), throwingAbility, event.getPartialTicks());
+		renderMeter(poseStack, throwingAbility, partialTick, height, width);
 
 		RenderSystem.enableBlend();
 	}
 
-	public static void blitWithColor(MatrixStack matrixStack, int x, int y, int xTex, int yTex, int width, int height, int texWidth, int texHeight, int r, int g, int b, int a) {
-		BufferBuilder lvt_10_1_ = Tessellator.getInstance().getBuilder();
-		float sX = x, sY = y, eX = x + width, eY = y + height;
-		float sXTex = xTex / (float) texWidth, sYTex = yTex / (float) texHeight, eXTex = (xTex + width) / (float) texWidth, eYTex = (yTex + height) / (float) texHeight;
-		Matrix4f pose = matrixStack.last().pose();
-		lvt_10_1_.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
-		lvt_10_1_.vertex(pose, sX, eY, 0f).color(r, g, b, a).uv(sXTex, eYTex).endVertex();
-		lvt_10_1_.vertex(pose, eX, eY, 0f).color(r, g, b, a).uv(eXTex, eYTex).endVertex();
-		lvt_10_1_.vertex(pose, eX, sY, 0f).color(r, g, b, a).uv(eXTex, sYTex).endVertex();
-		lvt_10_1_.vertex(pose, sX, sY, 0f).color(r, g, b, a).uv(sXTex, sYTex).endVertex();
-		lvt_10_1_.end();
-		RenderSystem.enableAlphaTest();
-		WorldVertexBufferUploader.end(lvt_10_1_);
-	}
-
-	private void renderMeter(MatrixStack stack, AbstractThrowingAbility throwingAbility, float partialTick) {
+	private void renderMeter(PoseStack stack, AbstractThrowingAbility throwingAbility, float partialTick, int screenHeight, int screenWidth) {
 		Minecraft mc = Minecraft.getInstance();
 
-		float chargePhase = MathHelper.clamp((throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick(), 0, 1);
-		MainWindow window = mc.getWindow();
-		int screenHeight = window.getGuiScaledHeight();
-		int screenWidth = window.getGuiScaledWidth();
+		float chargePhase = Mth.clamp((throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick(), 0, 1);
+		var window = mc.getWindow();
 		float guiScale = (float) window.getGuiScale();
 		float screenCenterY = screenHeight / 2f;
 		float screenCenterX = screenWidth / 2f;
@@ -80,12 +72,11 @@ public class ThrowPowerMeter extends AbstractGui {
 
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
-		RenderSystem.disableAlphaTest();
 		RenderSystem.defaultBlendFunc();
 
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder builder = tessellator.getBuilder();
-		float fadeInScale = ThrowabilityConfig.Client.HUD_FADE_IN.get() ? (1f - MathHelper.square(1f - chargePhase)) : 1f;
+		var tesselator = Tesselator.getInstance();
+		BufferBuilder builder = tesselator.getBuilder();
+		float fadeInScale = ThrowabilityConfig.Client.HUD_FADE_IN.get() ? (1f - Mth.square(1f - chargePhase)) : 1f;
 		int a = (int) (200f * fadeInScale);
 		int r, g, b;
 		ThrowType currentType = LocalThrowingAbility.getCurrentThrowType();
@@ -110,7 +101,8 @@ public class ThrowPowerMeter extends AbstractGui {
 				g = 0;
 				b = 0;
 		}
-		builder.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 		builder.vertex(pose, screenCenterX, screenCenterY - innerRadius, 0).color(r, g, b, a).endVertex();
 		builder.vertex(pose, screenCenterX, screenCenterY - outerRadius, 0).color(r, g, b, a).endVertex();
 		for (int i = 0; i < division; i++) {
@@ -122,13 +114,13 @@ public class ThrowPowerMeter extends AbstractGui {
 			}
 			float angle = (float) ((2. * Math.PI) * renderingPhase);
 			builder.vertex(pose,
-					screenCenterX - innerRadius * MathHelper.sin(angle),
-					screenCenterY - innerRadius * MathHelper.cos(angle),
+					screenCenterX - innerRadius * Mth.sin(angle),
+					screenCenterY - innerRadius * Mth.cos(angle),
 					0
 			).color(r, g, b, a).endVertex();
 			builder.vertex(pose,
-					screenCenterX - outerRadius * MathHelper.sin(angle),
-					screenCenterY - outerRadius * MathHelper.cos(angle),
+					screenCenterX - outerRadius * Mth.sin(angle),
+					screenCenterY - outerRadius * Mth.cos(angle),
 					0
 			).color(r, g, b, a).endVertex();
 
@@ -136,11 +128,11 @@ public class ThrowPowerMeter extends AbstractGui {
 				break;
 			}
 		}
-		tessellator.end();
+		tesselator.end();
 
 		RenderSystem.enableTexture();
 
-		mc.getTextureManager().bind(ICON_LOCATION);
+		RenderSystem.setShaderTexture(0, ICON_LOCATION);
 		for (int i = 0; i < ThrowType.values().length; i++) {
 			int yOffset;
 			if (i == currentType.ordinal()) {
@@ -165,4 +157,5 @@ public class ThrowPowerMeter extends AbstractGui {
 			);
 		}
 	}
+
 }

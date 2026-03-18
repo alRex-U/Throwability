@@ -2,22 +2,22 @@ package com.alrex.throwability.extern.naturot;
 
 import com.alrex.naturot.NaturotUtils;
 import com.alrex.throwability.extern.ExternalModManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public class NaturotManager extends ExternalModManager {
     public NaturotManager() {
         super("naturot");
     }
 
-    public void rotateEntity(Entity entity, Vector3d deltaMovement) {
+    public void rotateEntity(Entity entity, Vec3 deltaMovement) {
         if (!isInstalled()) return;
-        Vector3d rotAxis = deltaMovement.normalize().cross(new Vector3d(0, 1, 0));
+        var rotAxis = deltaMovement.normalize().cross(new Vec3(0, 1, 0));
         NaturotUtils.setRotation(
                 entity,
                 rotAxis,
-                (float) (MathHelper.clamp(deltaMovement.length() * (0.7 + 0.6 * entity.level.getRandom().nextDouble()), 0, 1) * Math.PI / 4.)
+                (float) (Mth.clamp(deltaMovement.length() * (0.7 + 0.6 * entity.level.getRandom().nextDouble()), 0, 1) * Math.PI / 4.)
         );
     }
 }

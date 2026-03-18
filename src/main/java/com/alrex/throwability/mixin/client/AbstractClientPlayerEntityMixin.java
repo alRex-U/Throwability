@@ -8,12 +8,12 @@ import com.alrex.throwability.common.ability.IThrowabilityProvider;
 import com.alrex.throwability.common.ability.LocalThrowingAbility;
 import com.alrex.throwability.common.ability.RemoteThrowingAbility;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,22 +22,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 
-@Mixin(AbstractClientPlayerEntity.class)
-public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity implements IThrowabilityProvider, IAnimationHostProvider {
+@Mixin(AbstractClientPlayer.class)
+public abstract class AbstractClientPlayerEntityMixin extends Player implements IThrowabilityProvider, IAnimationHostProvider {
     @Unique
     private final AnimationHost throwability$animationHost = Animations.newAnimationHost();
     @Unique
     @Nullable
     private AbstractThrowingAbility throwability$throwingAbility = null;
 
-    public AbstractClientPlayerEntityMixin(World world, BlockPos blockPos, float p_i241920_3_, GameProfile gameProfile) {
+    public AbstractClientPlayerEntityMixin(Level world, BlockPos blockPos, float p_i241920_3_, GameProfile gameProfile) {
         super(world, blockPos, p_i241920_3_, gameProfile);
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void onInit(ClientWorld world, GameProfile gameProfile, CallbackInfo ci) {
-        if ((Object) this instanceof ClientPlayerEntity) {
-            throwability$throwingAbility = new LocalThrowingAbility((ClientPlayerEntity) (Object) this);
+    private void onInit(ClientLevel world, GameProfile gameProfile, CallbackInfo ci) {
+        if ((Object) this instanceof LocalPlayer) {
+            throwability$throwingAbility = new LocalThrowingAbility((LocalPlayer) (Object) this);
         } else {
             throwability$throwingAbility = new RemoteThrowingAbility(this);
         }

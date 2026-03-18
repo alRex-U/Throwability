@@ -1,59 +1,58 @@
 package com.alrex.throwability.common.entity;
 
-import net.minecraft.entity.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.network.NetworkHooks;
 
-@OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownSpawnEggEntity extends ProjectileItemEntity implements IRendersAsItem {
-    public ThrownSpawnEggEntity(EntityType<? extends ThrownSpawnEggEntity> entityType, World level) {
+public class ThrownSpawnEggEntity extends ThrowableItemProjectile {
+    public ThrownSpawnEggEntity(EntityType<? extends ThrownSpawnEggEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public ThrownSpawnEggEntity(World level, double x, double y, double z, ItemStack spawnEgg) {
+    public ThrownSpawnEggEntity(Level level, double x, double y, double z, ItemStack spawnEgg) {
         super(EntityTypes.THROWN_SPAWN_EGG.get(), x, y, z, level);
         setItem(spawnEgg);
     }
 
-    public ThrownSpawnEggEntity(World level, LivingEntity thrower, ItemStack spawnEgg) {
+    public ThrownSpawnEggEntity(Level level, LivingEntity thrower, ItemStack spawnEgg) {
         super(EntityTypes.THROWN_SPAWN_EGG.get(), thrower, level);
         setItem(spawnEgg);
     }
 
     @Override
-    protected void onHit(RayTraceResult rayTraceResult) {
-        super.onHit(rayTraceResult);
+    protected void onHit(HitResult hitResult) {
+        super.onHit(hitResult);
         if (!this.level.isClientSide) {
             ItemStack egg = getItem();
             Item item = egg.getItem();
-            if (item instanceof SpawnEggItem) {
-                PlayerEntity owner = null;
-                Entity _owner = getOwner();
-                if (_owner instanceof PlayerEntity) {
-                    owner = (PlayerEntity) _owner;
+            if (item instanceof SpawnEggItem spawnEggItem) {
+                Player owner = null;
+                var _owner = getOwner();
+                if (_owner instanceof Player) {
+                    owner = (Player) _owner;
                 }
-                EntityType<?> entitytype = ((SpawnEggItem) item).getType(egg.getTag());
+                EntityType<?> entitytype = spawnEggItem.getType(egg.getTag());
                 if (entitytype.spawn(
-                        (ServerWorld) this.level,
+                        (ServerLevel) this.level,
                         egg,
                         owner,
                         blockPosition(),
-                        SpawnReason.SPAWN_EGG,
+                        MobSpawnType.SPAWN_EGG,
                         true,
-                        rayTraceResult instanceof BlockRayTraceResult && ((BlockRayTraceResult) rayTraceResult).getDirection() == Direction.UP
+                        hitResult instanceof BlockHitResult blockHitResult && blockHitResult.getDirection() == Direction.UP
                 ) != null) {
                     egg.shrink(1);
                 }
@@ -61,7 +60,7 @@ public class ThrownSpawnEggEntity extends ProjectileItemEntity implements IRende
             if (!egg.isEmpty()) {
                 spawnAtLocation(egg);
             }
-            this.remove();
+            this.discard();
         }
     }
 
@@ -71,7 +70,7 @@ public class ThrownSpawnEggEntity extends ProjectileItemEntity implements IRende
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

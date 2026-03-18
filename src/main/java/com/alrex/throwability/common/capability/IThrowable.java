@@ -3,18 +3,18 @@ package com.alrex.throwability.common.capability;
 import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public interface IThrowable {
-    Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick);
+    Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick);
 
-    default Entity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
-        ItemEntity itemEntity = new ItemEntity(
+    default Entity throwAsItem(Player thrower, ItemStack stack, int chargedTick) {
+        var itemEntity = new ItemEntity(
                 thrower.level, thrower.getX(), thrower.getEyeY() - 0.3, thrower.getZ(), stack
         );
         itemEntity.setPickUpDelay(20);
@@ -27,11 +27,11 @@ public interface IThrowable {
         return itemEntity;
     }
 
-    default void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
-        thrower.playSound(SoundEvents.THROW.get(), MathHelper.clamp(chargedTick / (float) getMaxChargeTick(stack), 0f, 1f), 1f);
+    default void onThrownOnClient(Player thrower, ItemStack stack, ThrowType type, int chargedTick) {
+        thrower.playSound(SoundEvents.THROW.get(), Mth.clamp(chargedTick / (float) getMaxChargeTick(stack), 0f, 1f), 1f);
     }
 
-    default boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
+    default boolean canThrowableNow(Player thrower, ItemStack stack) {
         Pose pose = thrower.getPose();
         return pose == Pose.STANDING || pose == Pose.CROUCHING;
     }

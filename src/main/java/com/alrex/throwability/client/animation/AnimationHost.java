@@ -1,6 +1,7 @@
 package com.alrex.throwability.client.animation;
 
-import net.minecraft.entity.player.PlayerEntity;
+
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -16,7 +17,7 @@ public class AnimationHost {
         this.singleAnimations = singleAnimations;
     }
 
-    public void startAnimationSection(PlayerEntity player) {
+    public void startAnimationSection(Player player) {
         session = null;
         for (IAnimation animation : singleAnimations) {
             if (animation.isActive(player)) {
@@ -29,25 +30,25 @@ public class AnimationHost {
         session.onStartAnimation(player);
     }
 
-    public void finishAnimationSection(PlayerEntity player) {
+    public void finishAnimationSection(Player player) {
         if (session != null) {
             session.onFinishAnimation(player);
         }
         session = null;
     }
 
-    public boolean shouldStopVanillaModelAnimation(PlayerEntity player) {
+    public boolean shouldStopVanillaModelAnimation(Player player) {
         if (session == null) return false;
         return session.stopVanillaModelAnimation(player);
     }
 
-    public boolean shouldStopVanillaRotation(PlayerEntity player) {
+    public boolean shouldStopVanillaRotation(Player player) {
         if (session == null) return false;
         return session.stopVanillaRotation(player);
     }
 
     @Nullable
-    public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
+    public PlayerRotation getRotation(Player player, float partialTick) {
         if (session == null) return null;
         return session.getRotation(player, partialTick);
     }
@@ -61,23 +62,18 @@ public class AnimationHost {
         void animateModel(PlayerModelAnimator animator);
 
         @Nullable
-        PlayerRotation getRotation(PlayerEntity player, float partialTick);
+        PlayerRotation getRotation(Player player, float partialTick);
 
-        boolean stopVanillaModelAnimation(PlayerEntity player);
+        boolean stopVanillaModelAnimation(Player player);
 
-        boolean stopVanillaRotation(PlayerEntity player);
+        boolean stopVanillaRotation(Player player);
 
-        void onStartAnimation(PlayerEntity player);
+        void onStartAnimation(Player player);
 
-        void onFinishAnimation(PlayerEntity player);
+        void onFinishAnimation(Player player);
     }
 
-    private static final class SingleAnimationSession implements IAnimationSession {
-        private final IAnimation animation;
-
-        public SingleAnimationSession(IAnimation animation) {
-            this.animation = animation;
-        }
+    private record SingleAnimationSession(IAnimation animation) implements IAnimationSession {
 
         @Override
         public void animateModel(PlayerModelAnimator animator) {
@@ -86,37 +82,32 @@ public class AnimationHost {
 
         @Nullable
         @Override
-        public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
+        public PlayerRotation getRotation(Player player, float partialTick) {
             return animation.getModelRotation(player, null, partialTick);
         }
 
         @Override
-        public boolean stopVanillaModelAnimation(PlayerEntity player) {
+        public boolean stopVanillaModelAnimation(Player player) {
             return true;
         }
 
         @Override
-        public boolean stopVanillaRotation(PlayerEntity player) {
+        public boolean stopVanillaRotation(Player player) {
             return false;
         }
 
         @Override
-        public void onStartAnimation(PlayerEntity player) {
+        public void onStartAnimation(Player player) {
             this.animation.onStartAnimation(player);
         }
 
         @Override
-        public void onFinishAnimation(PlayerEntity player) {
+        public void onFinishAnimation(Player player) {
             this.animation.onFinishAnimation(player);
         }
     }
 
-    private static final class MultiAnimationSession implements IAnimationSession {
-        private final List<IAnimation> animations;
-
-        public MultiAnimationSession(List<IAnimation> animations) {
-            this.animations = animations;
-        }
+    private record MultiAnimationSession(List<IAnimation> animations) implements IAnimationSession {
 
         @Override
         public void animateModel(PlayerModelAnimator animator) {
@@ -127,7 +118,7 @@ public class AnimationHost {
 
         @Nullable
         @Override
-        public PlayerRotation getRotation(PlayerEntity player, float partialTick) {
+        public PlayerRotation getRotation(Player player, float partialTick) {
             PlayerRotation rot = null;
             for (IAnimation animation : animations) {
                 rot = animation.getModelRotation(player, rot, partialTick);
@@ -136,24 +127,24 @@ public class AnimationHost {
         }
 
         @Override
-        public boolean stopVanillaModelAnimation(PlayerEntity player) {
+        public boolean stopVanillaModelAnimation(Player player) {
             return false;
         }
 
         @Override
-        public boolean stopVanillaRotation(PlayerEntity player) {
+        public boolean stopVanillaRotation(Player player) {
             return false;
         }
 
         @Override
-        public void onStartAnimation(PlayerEntity player) {
+        public void onStartAnimation(Player player) {
             for (IAnimation animation : animations) {
                 animation.onStartAnimation(player);
             }
         }
 
         @Override
-        public void onFinishAnimation(PlayerEntity player) {
+        public void onFinishAnimation(Player player) {
             for (IAnimation animation : animations) {
                 animation.onFinishAnimation(player);
             }

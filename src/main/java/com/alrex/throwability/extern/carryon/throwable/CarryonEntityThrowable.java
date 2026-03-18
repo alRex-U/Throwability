@@ -4,12 +4,12 @@ import com.alrex.throwability.Throwability;
 import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import tschipp.carryon.common.item.ItemCarryonEntity;
 
 public class CarryonEntityThrowable implements IThrowable {
@@ -18,14 +18,14 @@ public class CarryonEntityThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof ItemCarryonEntity) {
             Entity entity = ItemCarryonEntity.getEntity(stack, thrower.level);
 
-            Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower).add(throwVec);
-            double speedScale = 3.2 * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+            Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower).add(throwVec);
+            double speedScale = 3.2 * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setPos(pos.x, pos.y, pos.z);
             entity.setDeltaMovement(throwVec.scale(speedScale));
@@ -40,12 +40,12 @@ public class CarryonEntityThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsItem(Player thrower, ItemStack stack, int chargedTick) {
         return throwAsEntity(thrower, stack, chargedTick);
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+    public void onThrownOnClient(Player thrower, ItemStack stack, ThrowType type, int chargedTick) {
         IThrowable.super.onThrownOnClient(thrower, stack, type, chargedTick);
         thrower.getPersistentData().remove("carrySlot");
         ItemCarryonEntity.clearEntityData(stack);

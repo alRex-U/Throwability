@@ -3,30 +3,31 @@ package com.alrex.throwability.mixin.client;
 import com.alrex.throwability.client.animation.AnimationHost;
 import com.alrex.throwability.client.animation.IAnimationHostProvider;
 import com.alrex.throwability.client.animation.PlayerRotation;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerRenderer.class)
-public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>> {
-    public PlayerRendererMixin(EntityRendererManager manager, PlayerModel<AbstractClientPlayerEntity> model, float p_i50965_3_) {
-        super(manager, model, p_i50965_3_);
+public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+
+    public PlayerRendererMixin(EntityRendererProvider.Context context, PlayerModel<AbstractClientPlayer> model, float p_174291_) {
+        super(context, model, p_174291_);
     }
 
     @Inject(
-            method = "render(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V",
+            method = "render(Lnet/minecraft/client/player/AbstractClientPlayer;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At("HEAD")
     )
-    private void onRenderHead(AbstractClientPlayerEntity player, float p_225623_2_, float partialTick, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, CallbackInfo ci) {
+    private void onRenderHead(AbstractClientPlayer player, float p_117789_, float p_117790_, PoseStack poseStack, MultiBufferSource multiBufferSource, int p_117793_, CallbackInfo ci) {
         if (player instanceof IAnimationHostProvider) {
             AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
             animationHost.startAnimationSection(player);
@@ -34,10 +35,10 @@ public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientP
     }
 
     @Inject(
-            method = "render(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;FFLcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;I)V",
+            method = "render(Lnet/minecraft/client/player/AbstractClientPlayer;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At("RETURN")
     )
-    private void onRenderTail(AbstractClientPlayerEntity player, float p_225623_2_, float partialTick, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, CallbackInfo ci) {
+    private void onRenderTail(AbstractClientPlayer player, float p_117789_, float p_117790_, PoseStack poseStack, MultiBufferSource multiBufferSource, int p_117793_, CallbackInfo ci) {
         if (player instanceof IAnimationHostProvider) {
             AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
             animationHost.finishAnimationSection(player);
@@ -45,11 +46,11 @@ public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientP
     }
 
     @Inject(
-            method = "setupRotations(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;Lcom/mojang/blaze3d/matrix/MatrixStack;FFF)V",
+            method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    private void onSetupRotationsHead(AbstractClientPlayerEntity player, MatrixStack matrixStack, float p_225621_3_, float yRotDegree, float partialTick, CallbackInfo ci) {
+    private void onSetupRotationsHead(AbstractClientPlayer player, PoseStack matrixStack, float p_225621_3_, float yRotDegree, float partialTick, CallbackInfo ci) {
         if (player instanceof IAnimationHostProvider) {
             AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
             if (animationHost.shouldStopVanillaRotation(player)) {
@@ -69,10 +70,10 @@ public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientP
     }
 
     @Inject(
-            method = "setupRotations(Lnet/minecraft/client/entity/player/AbstractClientPlayerEntity;Lcom/mojang/blaze3d/matrix/MatrixStack;FFF)V",
+            method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V",
             at = @At("RETURN")
     )
-    private void onSetupRotationsTail(AbstractClientPlayerEntity player, MatrixStack matrixStack, float p_225621_3_, float yRotDegree, float partialTick, CallbackInfo ci) {
+    private void onSetupRotationsTail(AbstractClientPlayer player, PoseStack matrixStack, float p_225621_3_, float yRotDegree, float partialTick, CallbackInfo ci) {
         if (player instanceof IAnimationHostProvider) {
             AnimationHost animationHost = ((IAnimationHostProvider) player).getAnimationHost();
             PlayerRotation rotation = animationHost.getRotation(player, partialTick);

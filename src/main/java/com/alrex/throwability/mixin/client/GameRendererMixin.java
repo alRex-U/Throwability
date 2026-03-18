@@ -1,17 +1,16 @@
 package com.alrex.throwability.mixin.client;
 
 import com.alrex.throwability.common.entity.ThrownWeaponEntity;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResourceManagerReloadListener;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,13 +18,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.function.Predicate;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin implements IResourceManagerReloadListener, AutoCloseable {
-    @Redirect(method = "pick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/ProjectileHelper;getEntityHitResult(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/vector/Vector3d;Lnet/minecraft/util/math/vector/Vector3d;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/function/Predicate;D)Lnet/minecraft/util/math/EntityRayTraceResult;"))
-    private EntityRayTraceResult onGetEntityHitResult(Entity cameraEntity, Vector3d eyePosition, Vector3d viewVector, AxisAlignedBB availableArea, Predicate<Entity> entityPredicate, double pickRange) {
-        if (cameraEntity instanceof ClientPlayerEntity) {
-            ItemStack mainHandItem = ((ClientPlayerEntity) cameraEntity).getItemInHand(Hand.MAIN_HAND);
+public abstract class GameRendererMixin implements ResourceManagerReloadListener, AutoCloseable {
+    @Redirect(method = "pick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"))
+    private EntityHitResult onGetEntityHitResult(Entity cameraEntity, Vec3 eyePosition, Vec3 viewVector, AABB availableArea, Predicate<Entity> entityPredicate, double pickRange) {
+        if (cameraEntity instanceof LocalPlayer localPlayer) {
+            var mainHandItem = (localPlayer).getItemInHand(InteractionHand.MAIN_HAND);
             if (mainHandItem.isEmpty()) {
-                return ProjectileHelper.getEntityHitResult(cameraEntity, eyePosition, viewVector, availableArea,
+                return ProjectileUtil.getEntityHitResult(cameraEntity, eyePosition, viewVector, availableArea,
                         (entity) -> entityPredicate.test(entity)
                                 || entity instanceof ItemEntity
                                 || entity instanceof ThrownWeaponEntity,
@@ -33,6 +32,6 @@ public abstract class GameRendererMixin implements IResourceManagerReloadListene
                 );
             }
         }
-        return ProjectileHelper.getEntityHitResult(cameraEntity, eyePosition, viewVector, availableArea, entityPredicate, pickRange);
+        return ProjectileUtil.getEntityHitResult(cameraEntity, eyePosition, viewVector, availableArea, entityPredicate, pickRange);
     }
 }

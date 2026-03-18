@@ -1,22 +1,21 @@
 package com.alrex.throwability.utils;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.tileentity.TileEntity;
+import com.alrex.throwability.Throwability;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockUtils {
-    public static void applyTagToTileEntity(TileEntity tileEntity, CompoundNBT tileEntityData, BlockState blockState) {
-        CompoundNBT compoundnbt = tileEntity.save(new CompoundNBT());
+    public static void applyTagToTileEntity(BlockEntity tileEntity, CompoundTag tileEntityData, BlockState blockState) {
+        var compoundnbt = tileEntity.saveWithoutMetadata();
         for (String key : tileEntityData.getAllKeys()) {
-            INBT inbt = tileEntityData.get(key);
-            if (!"x".equals(key) && !"y".equals(key) && !"z".equals(key)) {
-                if (inbt != null) {
-                    compoundnbt.put(key, inbt.copy());
-                }
-            }
+            compoundnbt.put(key, tileEntityData.get(key).copy());
         }
-        tileEntity.load(blockState, compoundnbt);
+        try {
+            tileEntity.load(compoundnbt);
+        } catch (Exception e) {
+            Throwability.LOGGER.error("Failed to load block entity from falling block", e);
+        }
         tileEntity.setChanged();
     }
 }

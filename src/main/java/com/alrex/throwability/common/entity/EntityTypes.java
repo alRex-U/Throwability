@@ -1,19 +1,19 @@
 package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.Throwability;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class EntityTypes {
-    private static final DeferredRegister<net.minecraft.entity.EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITIES, Throwability.MOD_ID);
+    private static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITIES, Throwability.MOD_ID);
     public static RegistryObject<EntityType<ThrownWeaponEntity>> THROWN_WEAPON = REGISTRY.register(
             "thrown_weapon",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownWeaponEntity>) ThrownWeaponEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownWeaponEntity>) ThrownWeaponEntity::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
                     .clientTrackingRange(4)
                     .updateInterval(20)
@@ -22,7 +22,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownSpawnEggEntity>> THROWN_SPAWN_EGG = REGISTRY.register(
             "thrown_spawn_egg",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownSpawnEggEntity>) ThrownSpawnEggEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownSpawnEggEntity>) ThrownSpawnEggEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -31,7 +31,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownGlowstoneDustEntity>> THROWN_GLOWSTONE_DUST = REGISTRY.register(
             "thrown_glowstone_dust",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownGlowstoneDustEntity>) ThrownGlowstoneDustEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownGlowstoneDustEntity>) ThrownGlowstoneDustEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -40,7 +40,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownBlazePowderEntity>> THROWN_BLAZE_POWDER = REGISTRY.register(
             "thrown_blaze_powder",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownBlazePowderEntity>) ThrownBlazePowderEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownBlazePowderEntity>) ThrownBlazePowderEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -49,7 +49,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownBlazeRodEntity>> THROWN_BLAZE_ROD = REGISTRY.register(
             "thrown_blaze_rod",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownBlazeRodEntity>) ThrownBlazeRodEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownBlazeRodEntity>) ThrownBlazeRodEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -58,7 +58,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownGunPowderEntity>> THROWN_GUNPOWDER = REGISTRY.register(
             "thrown_gunpowder",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownGunPowderEntity>) ThrownGunPowderEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownGunPowderEntity>) ThrownGunPowderEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -67,7 +67,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownGhastTearEntity>> THROWN_GHAST_TEAR = REGISTRY.register(
             "thrown_ghast_tear",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownGhastTearEntity>) ThrownGhastTearEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownGhastTearEntity>) ThrownGhastTearEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -76,7 +76,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownSlimeballEntity>> THROWN_SLIMEBALL = REGISTRY.register(
             "thrown_slimeball",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownSlimeballEntity>) ThrownSlimeballEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownSlimeballEntity>) ThrownSlimeballEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -85,16 +85,16 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownInkSacEntity>> THROWN_INK_SAC = REGISTRY.register(
             "thrown_ink_sac",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownInkSacEntity>) ThrownInkSacEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownInkSacEntity>) ThrownInkSacEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
                     .build("thrown_ink_sac")
     );
-    public static RegistryObject<EntityType<ThrownBucketEntity>> THROWN_BUCKET = REGISTRY.register(
+    public static RegistryObject<EntityType<ThrownDispensibleContainerEntity>> THROWN_BUCKET = REGISTRY.register(
             "thrown_bucket",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownBucketEntity>) ThrownBucketEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownDispensibleContainerEntity>) ThrownDispensibleContainerEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)
@@ -103,7 +103,7 @@ public class EntityTypes {
     public static RegistryObject<EntityType<ThrownSpiderEyeEntity>> THROWN_SPIDER_EYE = REGISTRY.register(
             "thrown_spider_eye",
             () -> EntityType.Builder
-                    .of((EntityType.IFactory<ThrownSpiderEyeEntity>) ThrownSpiderEyeEntity::new, EntityClassification.MISC)
+                    .of((EntityType.EntityFactory<ThrownSpiderEyeEntity>) ThrownSpiderEyeEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f)
                     .clientTrackingRange(4)
                     .updateInterval(10)

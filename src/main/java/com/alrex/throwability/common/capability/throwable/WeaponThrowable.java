@@ -5,23 +5,20 @@ import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.common.entity.ThrownWeaponEntity;
 import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.utils.ThrowUtil;
-import com.google.common.collect.Multimap;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class WeaponThrowable implements IThrowable {
     public static double getBaseAttackDamage(ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> attrMap = stack.getAttributeModifiers(EquipmentSlotType.MAINHAND);
-        double damageBonus = EnchantmentHelper.getDamageBonus(stack, CreatureAttribute.UNDEFINED);
+        var attrMap = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
+        double damageBonus = EnchantmentHelper.getDamageBonus(stack, MobType.UNDEFINED);
         double plusDamage = 0;
         double multiplyScale = 1;
         for (AttributeModifier modifier : attrMap.get(Attributes.ATTACK_DAMAGE)) {
@@ -43,15 +40,15 @@ public class WeaponThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (hasAttackDamage(stack)) {
             stack.hurtAndBreak(1, thrower, (player) -> player.broadcastBreakEvent(thrower.getUsedItemHand()));
             ThrownWeaponEntity entity = new ThrownWeaponEntity(thrower.level, thrower, stack);
 
-            Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4.
                     * ThrowUtil.getSpeedScale(thrower)
-                    * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+                    * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
             entity.setDeltaMovement(throwVec.scale(speedScale));
 
@@ -61,9 +58,9 @@ public class WeaponThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+    public void onThrownOnClient(Player thrower, ItemStack stack, ThrowType type, int chargedTick) {
         if (type == ThrowType.ONE_AS_ENTITY) {
-            thrower.playSound(SoundEvents.WEAPON_THROW.get(), MathHelper.clamp(chargedTick / (float) getMaxChargeTick(stack), 0, 1f), 1f);
+            thrower.playSound(SoundEvents.WEAPON_THROW.get(), Mth.clamp(chargedTick / (float) getMaxChargeTick(stack), 0, 1f), 1f);
         } else {
             IThrowable.super.onThrownOnClient(thrower, stack, type, chargedTick);
         }

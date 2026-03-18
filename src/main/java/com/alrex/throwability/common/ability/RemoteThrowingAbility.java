@@ -3,15 +3,14 @@ package com.alrex.throwability.common.ability;
 import com.alrex.throwability.common.capability.Capabilities;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.common.capability.throwable.StandardThrowable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 
 public class RemoteThrowingAbility extends AbstractThrowingAbility {
-    private final PlayerEntity player;
+    private final Player player;
 
-    public RemoteThrowingAbility(PlayerEntity player) {
+    public RemoteThrowingAbility(Player player) {
         this.player = player;
     }
 
@@ -19,14 +18,14 @@ public class RemoteThrowingAbility extends AbstractThrowingAbility {
     public void tick() {
         super.tick();
 
-        ItemStack selected = player.inventory.getSelected();
+        var selected = player.getInventory().getSelected();
         if (selected.isEmpty()) {
             stopCharging();
-            chargingTick = MathHelper.clamp(chargingTick, 0, StandardThrowable.getInstance().getMaxChargeTick(selected));
+            chargingTick = Mth.clamp(chargingTick, 0, StandardThrowable.getInstance().getMaxChargeTick(selected));
             return;
         }
         IThrowable throwable = selected.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
-        chargingTick = MathHelper.clamp(chargingTick, 0, throwable.getMaxChargeTick(selected));
+        chargingTick = Mth.clamp(chargingTick, 0, throwable.getMaxChargeTick(selected));
     }
 
     public static class SyncedData {
@@ -38,7 +37,7 @@ public class RemoteThrowingAbility extends AbstractThrowingAbility {
             this.chargingTick = chargingTick;
         }
 
-        public static SyncedData read(PacketBuffer buffer) {
+        public static SyncedData read(FriendlyByteBuf buffer) {
             return new SyncedData(
                     buffer.readBoolean(),
                     buffer.readInt()
@@ -50,7 +49,7 @@ public class RemoteThrowingAbility extends AbstractThrowingAbility {
             remote.charging = charging;
         }
 
-        public void write(PacketBuffer buffer) {
+        public void write(FriendlyByteBuf buffer) {
             buffer.writeBoolean(this.charging);
             buffer.writeInt(this.chargingTick);
             buffer.writeInt(this.chargingTick);

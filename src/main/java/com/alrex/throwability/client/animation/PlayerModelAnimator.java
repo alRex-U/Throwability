@@ -1,13 +1,13 @@
 package com.alrex.throwability.client.animation;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 
 public class PlayerModelAnimator {
-    private final PlayerEntity player;
+    private final Player player;
     private final PlayerModel<?> model;
     private final boolean slim;
     private final float partial;
@@ -18,7 +18,7 @@ public class PlayerModelAnimator {
     private final float headPitch;
 
     public PlayerModelAnimator(
-            PlayerEntity player,
+            Player player,
             PlayerModel<?> model,
             boolean slim,
             float ageInTicks,
@@ -38,7 +38,7 @@ public class PlayerModelAnimator {
         this.headPitch = headPitch;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
@@ -74,49 +74,49 @@ public class PlayerModelAnimator {
         return limbSwingAmount;
     }
 
-    public void setRotation(ModelRenderer renderer, float xRot, float yRot, float zRot, float factor) {
-        renderer.xRot = MathHelper.rotLerp(factor, renderer.xRot, xRot);
-        renderer.yRot = MathHelper.rotLerp(factor, renderer.yRot, yRot);
-        renderer.zRot = MathHelper.rotLerp(factor, renderer.zRot, zRot);
+    public void setRotation(ModelPart part, float xRot, float yRot, float zRot, float factor) {
+        part.xRot = Mth.rotLerp(factor, part.xRot, xRot);
+        part.yRot = Mth.rotLerp(factor, part.yRot, yRot);
+        part.zRot = Mth.rotLerp(factor, part.zRot, zRot);
     }
 
-    public void setRotation(ModelRenderer renderer, float xRot, float yRot, float zRot) {
-        renderer.xRot = xRot;
-        renderer.yRot = yRot;
-        renderer.zRot = zRot;
+    public void setRotation(ModelPart part, float xRot, float yRot, float zRot) {
+        part.xRot = xRot;
+        part.yRot = yRot;
+        part.zRot = zRot;
     }
 
-    public void setRotation(ModelRenderer renderer, Rotation rotation, float factor) {
-        setRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
+    public void setRotation(ModelPart part, Rotation rotation, float factor) {
+        setRotation(part, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
     }
 
-    public void setRotation(ModelRenderer renderer, Rotation rotation) {
-        setRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
+    public void setRotation(ModelPart part, Rotation rotation) {
+        setRotation(part, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
     }
 
-    public void addRotation(ModelRenderer renderer, float xRot, float yRot, float zRot, float factor) {
-        renderer.xRot += factor * xRot;
-        renderer.yRot += factor * yRot;
-        renderer.zRot += factor * zRot;
+    public void addRotation(ModelPart part, float xRot, float yRot, float zRot, float factor) {
+        part.xRot += factor * xRot;
+        part.yRot += factor * yRot;
+        part.zRot += factor * zRot;
     }
 
-    public void addRotation(ModelRenderer renderer, float xRot, float yRot, float zRot) {
-        renderer.xRot += xRot;
-        renderer.yRot += yRot;
-        renderer.zRot += zRot;
+    public void addRotation(ModelPart part, float xRot, float yRot, float zRot) {
+        part.xRot += xRot;
+        part.yRot += yRot;
+        part.zRot += zRot;
     }
 
-    public void addRotation(ModelRenderer renderer, Rotation rotation, float factor) {
-        addRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
+    public void addRotation(ModelPart part, Rotation rotation, float factor) {
+        addRotation(part, rotation.getXRot(), rotation.getYRot(), rotation.getZRot(), factor);
     }
 
-    public void addRotation(ModelRenderer renderer, Rotation rotation) {
-        addRotation(renderer, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
+    public void addRotation(ModelPart part, Rotation rotation) {
+        addRotation(part, rotation.getXRot(), rotation.getYRot(), rotation.getZRot());
     }
 
-    public void bob(ModelRenderer renderer, float scale) {
-        renderer.zRot += scale * MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
-        renderer.xRot += scale * MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+    public void bob(ModelPart part, float scale) {
+        part.zRot += scale * Mth.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+        part.xRot += scale * Mth.sin(ageInTicks * 0.067F) * 0.05F;
     }
 
     public void copyFromBodyToWear() {

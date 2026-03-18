@@ -3,12 +3,12 @@ package com.alrex.throwability.mixin.carryon;
 import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
 import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.alrex.throwability.common.ability.IThrowabilityProvider;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,12 +29,12 @@ import javax.annotation.Nullable;
 public abstract class RenderEventsMixin {
     @Nullable
     @Unique
-    private PlayerEntity throwability$drawingPlayer = null;
+    private Player throwability$drawingPlayer = null;
     @Unique
     private float throwability$currentPartialTick = 0;
 
     @Inject(method = "applyGeneralTransformations", at = @At("TAIL"), remap = false)
-    private void onApplyGeneralTransformations(PlayerEntity player, float partialTicks, MatrixStack matrix, CallbackInfo ci) {
+    private void onApplyGeneralTransformations(Player player, float partialTicks, PoseStack matrix, CallbackInfo ci) {
         if (!(player instanceof IThrowabilityProvider)) return;
         AbstractThrowingAbility abstractThrowingAbility = ((IThrowabilityProvider) player).getThrowAbility();
         if (!abstractThrowingAbility.isCharging()) return;
@@ -56,20 +56,19 @@ public abstract class RenderEventsMixin {
         );
     }
 
-
     @Inject(method = "drawArms", at = @At("HEAD"), remap = false)
-    private void onDrawArmsHead(PlayerEntity player, float partialTicks, MatrixStack matrix, IRenderTypeBuffer buffer, int light, CallbackInfo ci) {
+    private void onDrawArmsHead(Player player, float partialTicks, PoseStack matrix, MultiBufferSource buffer, int light, CallbackInfo ci) {
         throwability$drawingPlayer = player;
         throwability$currentPartialTick = partialTicks;
     }
 
     @Inject(method = "drawArms", at = @At("RETURN"), remap = false)
-    private void onDrawArmsTail(PlayerEntity player, float partialTicks, MatrixStack matrix, IRenderTypeBuffer buffer, int light, CallbackInfo ci) {
+    private void onDrawArmsTail(Player player, float partialTicks, PoseStack matrix, MultiBufferSource buffer, int light, CallbackInfo ci) {
         throwability$drawingPlayer = null;
     }
 
-    @Inject(method = "renderArmPost", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/model/ModelRenderer;render(Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;II)V"))
-    private void onRenderArmPost(ModelRenderer arm, float x, float z, boolean right, boolean sneaking, int light, MatrixStack matrix, IVertexBuilder builder, CallbackInfo ci) {
+    @Inject(method = "renderArmPost", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;II)V"))
+    private void onRenderArmPost(ModelPart arm, float x, float z, boolean right, boolean sneaking, int light, PoseStack matrix, VertexConsumer builder, CallbackInfo ci) {
         if (!(throwability$drawingPlayer instanceof IThrowabilityProvider)) return;
         AbstractThrowingAbility abstractThrowingAbility = ((IThrowabilityProvider) throwability$drawingPlayer).getThrowAbility();
         if (!abstractThrowingAbility.isCharging()) return;

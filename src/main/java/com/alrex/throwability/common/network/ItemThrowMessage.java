@@ -7,15 +7,14 @@ import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.common.capability.throwable.StandardThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -27,7 +26,7 @@ public class ItemThrowMessage {
 	public ThrowType type;
 
 	@OnlyIn(Dist.CLIENT)
-	public static void send(PlayerEntity player, int itemIndex, int chargingTick, ThrowType type) {
+	public static void send(Player player, int itemIndex, int chargingTick, ThrowType type) {
 		ItemThrowMessage message = new ItemThrowMessage();
 		message.senderID = player.getUUID();
 		message.chargingTick = chargingTick;
@@ -36,7 +35,7 @@ public class ItemThrowMessage {
 		Throwability.CHANNEL.send(PacketDistributor.SERVER.noArg(), message);
 	}
 
-	public static ItemThrowMessage decode(PacketBuffer packet) {
+	public static ItemThrowMessage decode(FriendlyByteBuf packet) {
 		ItemThrowMessage message = new ItemThrowMessage();
 		message.senderID = new UUID(packet.readLong(), packet.readLong());
 		message.chargingTick = packet.readInt();
@@ -48,9 +47,9 @@ public class ItemThrowMessage {
 	@OnlyIn(Dist.CLIENT)
 	public static void handleClient(ItemThrowMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
-			PlayerEntity player;
+			Player player;
 			if (contextSupplier.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-				World world = Minecraft.getInstance().level;
+				var world = Minecraft.getInstance().level;
 				if (world == null) return;
 				player = world.getPlayerByUUID(message.senderID);
 				if (player == Minecraft.getInstance().player) return;
@@ -58,7 +57,7 @@ public class ItemThrowMessage {
 				player = contextSupplier.get().getSender();
 			}
 			if (player == null) return;
-			ItemStack stack = player.inventory.getItem(message.itemIndex);
+			ItemStack stack = player.getInventory().getItem(message.itemIndex);
 			if (stack.isEmpty()) return;
 			IThrowable throwable = stack.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
 			ThrowUtil.throwItem(player, message.itemIndex, stack, throwable, message.type, message.chargingTick);
@@ -69,9 +68,9 @@ public class ItemThrowMessage {
 	@OnlyIn(Dist.DEDICATED_SERVER)
 	public static void handleServer(ItemThrowMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
 		contextSupplier.get().enqueueWork(() -> {
-			PlayerEntity player = contextSupplier.get().getSender();
+			var player = contextSupplier.get().getSender();
 			if (player == null) return;
-			ItemStack stack = player.inventory.getItem(message.itemIndex);
+			ItemStack stack = player.getInventory().getItem(message.itemIndex);
 			if (stack.isEmpty()) return;
 			IThrowable throwable = stack.getCapability(Capabilities.THROWABLE_CAPABILITY).orElseGet(StandardThrowable::getInstance);
 			ThrowUtil.throwItem(player, message.itemIndex, stack, throwable, message.type, message.chargingTick);
@@ -79,7 +78,7 @@ public class ItemThrowMessage {
 		contextSupplier.get().setPacketHandled(true);
 	}
 
-	public void encode(PacketBuffer packet) {
+	public void encode(FriendlyByteBuf packet) {
 		packet.writeLong(senderID.getLeastSignificantBits());
 		packet.writeLong(senderID.getMostSignificantBits());
 		packet.writeInt(chargingTick);

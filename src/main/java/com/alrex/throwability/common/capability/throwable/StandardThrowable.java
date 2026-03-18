@@ -3,11 +3,11 @@ package com.alrex.throwability.common.capability.throwable;
 import com.alrex.throwability.common.ability.ThrowType;
 import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class StandardThrowable implements IThrowable {
     private static final ArrayList<Supplier<VanillaThrowableEntry>> VANILLA_THROWABLE_REGISTRY = new ArrayList<>(Arrays.asList(
             () -> new VanillaThrowableEntry(ArrowItem.class, new ArrowThrowable()),
             () -> new VanillaThrowableEntry(EggItem.class, new EggThrowable()),
-            () -> new VanillaThrowableEntry(EnderPearlItem.class, new EnderPearlThrowable()),
+            () -> new VanillaThrowableEntry(EnderpearlItem.class, new EnderPearlThrowable()),
             () -> new VanillaThrowableEntry(ExperienceBottleItem.class, new ExperienceBottleThrowable()),
             () -> new VanillaThrowableEntry(FireChargeItem.class, new FireChargeThrowable()),
             () -> new VanillaThrowableEntry(FireworkRocketItem.class, new FireworkRocketThrowable()),
@@ -33,7 +33,8 @@ public class StandardThrowable implements IThrowable {
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SLIME_BALL), new SlimeballThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.INK_SAC), new InkSacThrowable()),
             () -> new VanillaThrowableEntry(item -> (item.getItem() == Items.SPIDER_EYE), new SpiderEyeThrowable()),
-            () -> new VanillaThrowableEntry(BucketItem.class, new BucketThrowable()),
+            () -> new VanillaThrowableEntry(BucketItem.class, new DispensibleContainerThrowable()),
+            () -> new VanillaThrowableEntry(SolidBucketItem.class, new DispensibleContainerThrowable()),
             () -> new VanillaThrowableEntry(ThrowablePotionItem.class, new ThrowablePotionThrowable()),
             () -> new VanillaThrowableEntry(TridentItem.class, new TridentThrowable()),
             () -> new VanillaThrowableEntry(SpawnEggItem.class, new SpawnEggThrowable()),
@@ -88,7 +89,7 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
                 return entry.getThrowable().throwAsEntity(thrower, stack, chargedTick);
@@ -99,9 +100,9 @@ public class StandardThrowable implements IThrowable {
         if (entity == null) {
             return throwAsItem(thrower, stack, chargedTick);
         }
-        Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
-        Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-        double speedScale = 4. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+        Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);
+        Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+        double speedScale = 4. * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
 
         entity.setPos(pos.x(), pos.y() + thrower.getEyeHeight() - 0.3, pos.z());
         entity.setDeltaMovement(throwVec.scale(speedScale));
@@ -110,7 +111,7 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsItem(Player thrower, ItemStack stack, int chargedTick) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
                 return entry.getThrowable().throwAsItem(thrower, stack, chargedTick);
@@ -131,7 +132,7 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public boolean canThrowableNow(PlayerEntity thrower, ItemStack stack) {
+    public boolean canThrowableNow(Player thrower, ItemStack stack) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
                 return entry.getThrowable().canThrowableNow(thrower, stack);
@@ -141,7 +142,7 @@ public class StandardThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+    public void onThrownOnClient(Player thrower, ItemStack stack, ThrowType type, int chargedTick) {
         for (VanillaThrowableEntry entry : vanillaThrowable) {
             if (entry.matches(stack)) {
                 entry.getThrowable().onThrownOnClient(thrower, stack, type, chargedTick);

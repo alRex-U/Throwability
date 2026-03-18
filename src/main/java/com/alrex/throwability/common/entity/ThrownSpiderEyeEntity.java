@@ -1,53 +1,50 @@
 package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.client.particle.ParticleUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
-@OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownSpiderEyeEntity extends ProjectileItemEntity implements IRendersAsItem {
-    public ThrownSpiderEyeEntity(EntityType<? extends ThrownSpiderEyeEntity> entityType, World level) {
+public class ThrownSpiderEyeEntity extends ThrowableItemProjectile {
+    public ThrownSpiderEyeEntity(EntityType<? extends ThrownSpiderEyeEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public ThrownSpiderEyeEntity(World level, LivingEntity entity) {
+    public ThrownSpiderEyeEntity(Level level, LivingEntity entity) {
         super(EntityTypes.THROWN_SPIDER_EYE.get(), entity, level);
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult entityRayTraceResult) {
-        super.onHitEntity(entityRayTraceResult);
+    protected void onHitEntity(EntityHitResult entityHitResult) {
+        super.onHitEntity(entityHitResult);
         if (!level.isClientSide) {
-            Entity entity = entityRayTraceResult.getEntity();
+            Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity) {
-                ((LivingEntity) entity).addEffect(new EffectInstance(Effects.POISON, 30, 2));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 30, 2));
             }
             level.broadcastEntityEvent(this, (byte) 4);
-            remove();
+            discard();
         }
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
-        super.onHitBlock(blockRayTraceResult);
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (!level.isClientSide) {
             level.broadcastEntityEvent(this, (byte) 3);
-            remove();
+            discard();
         }
     }
 
@@ -55,7 +52,7 @@ public class ThrownSpiderEyeEntity extends ProjectileItemEntity implements IRend
     @Override
     public void handleEntityEvent(byte eventID) {
         if (eventID == 3) {
-            IParticleData particleData = ParticleUtils.getItemParticle(null, getItem());
+            var particleData = ParticleUtils.getItemParticle(null, getItem());
             for (int i = 0; i < 8; i++) {
                 level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
@@ -73,7 +70,7 @@ public class ThrownSpiderEyeEntity extends ProjectileItemEntity implements IRend
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

@@ -4,8 +4,8 @@ import com.alrex.throwability.common.capability.throwable.StandardThrowable;
 import com.alrex.throwability.extern.ExternalModManager;
 import com.alrex.throwability.extern.carryon.throwable.CarryonBlockThrowable;
 import com.alrex.throwability.extern.carryon.throwable.CarryonEntityThrowable;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import tschipp.carryon.common.item.ItemCarryonBlock;
 import tschipp.carryon.common.item.ItemCarryonEntity;
 
@@ -14,7 +14,7 @@ public class CarryOnManager extends ExternalModManager {
         super("carryon");
     }
 
-    public boolean isCarryingOn(PlayerEntity player) {
+    public boolean isCarryingOn(Player player) {
         if (!isInstalled()) return false;
         Item item = player.getMainHandItem().getItem();
         return item instanceof ItemCarryonEntity || item instanceof ItemCarryonBlock;

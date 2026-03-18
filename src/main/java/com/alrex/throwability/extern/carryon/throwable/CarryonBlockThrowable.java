@@ -6,14 +6,14 @@ import com.alrex.throwability.common.capability.IThrowable;
 import com.alrex.throwability.common.thrown.IThrown;
 import com.alrex.throwability.extern.AdditionalMods;
 import com.alrex.throwability.utils.ThrowUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import tschipp.carryon.common.item.ItemCarryonBlock;
 import tschipp.carryon.common.item.ItemCarryonEntity;
 
@@ -23,23 +23,23 @@ public class CarryonBlockThrowable implements IThrowable {
     }
 
     @Override
-    public Entity throwAsItem(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsItem(Player thrower, ItemStack stack, int chargedTick) {
         return throwAsEntity(thrower, stack, chargedTick);
     }
 
     @Override
-    public Entity throwAsEntity(PlayerEntity thrower, ItemStack stack, int chargedTick) {
+    public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof ItemCarryonBlock) {
-            Vector3d pos = ThrowUtil.getBasicThrowingPosition(thrower);
+            Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);
             BlockState blockState = ItemCarryonBlock.getBlockState(stack);
             FallingBlockEntity entity = new FallingBlockEntity(
                     thrower.level, pos.x(), pos.y(), pos.z(), blockState
             );
 
-            Vector3d throwVec = ThrowUtil.getBasicThrowingVector(thrower);
-            double speedScale = 3. * MathHelper.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
-            Vector3d deltaMovement = throwVec.scale(speedScale);
+            Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
+            double speedScale = 3. * Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);
+            Vec3 deltaMovement = throwVec.scale(speedScale);
 
             entity.time = 1;
             entity.setPos(pos.x(), pos.y(), pos.z());
@@ -60,7 +60,7 @@ public class CarryonBlockThrowable implements IThrowable {
     }
 
     @Override
-    public void onThrownOnClient(PlayerEntity thrower, ItemStack stack, ThrowType type, int chargedTick) {
+    public void onThrownOnClient(Player thrower, ItemStack stack, ThrowType type, int chargedTick) {
         IThrowable.super.onThrownOnClient(thrower, stack, type, chargedTick);
         thrower.getPersistentData().remove("carrySlot");
         ItemCarryonEntity.clearEntityData(stack);

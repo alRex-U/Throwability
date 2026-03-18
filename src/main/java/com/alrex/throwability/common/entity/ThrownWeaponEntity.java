@@ -3,68 +3,65 @@ package com.alrex.throwability.common.entity;
 import com.alrex.throwability.common.capability.throwable.WeaponThrowable;
 import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.common.util.DamageSources;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.monster.EndermanEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
-public class ThrownWeaponEntity extends AbstractArrowEntity {
-    private static final DataParameter<ItemStack> DATA_ITEM_STACK;
+public class ThrownWeaponEntity extends AbstractArrow {
+    private static final EntityDataAccessor<ItemStack> DATA_ITEM_STACK;
 
     static {
-        DATA_ITEM_STACK = EntityDataManager.defineId(ThrownWeaponEntity.class, DataSerializers.ITEM_STACK);
+        DATA_ITEM_STACK = SynchedEntityData.defineId(ThrownWeaponEntity.class, EntityDataSerializers.ITEM_STACK);
     }
 
-    public ThrownWeaponEntity(EntityType<? extends AbstractArrowEntity> entityType, World world) {
+    public ThrownWeaponEntity(EntityType<? extends ThrownWeaponEntity> entityType, Level world) {
         super(entityType, world);
     }
 
-    public ThrownWeaponEntity(World world, double x, double y, double z) {
+    public ThrownWeaponEntity(Level world, double x, double y, double z) {
         super(EntityTypes.THROWN_WEAPON.get(), x, y, z, world);
     }
 
-    public ThrownWeaponEntity(World world, LivingEntity thrower, ItemStack weapon) {
+    public ThrownWeaponEntity(Level world, LivingEntity thrower, ItemStack weapon) {
         super(EntityTypes.THROWN_WEAPON.get(), thrower, world);
         setWeapon(weapon);
     }
 
     @Override
-    protected void onHitEntity(@Nonnull EntityRayTraceResult entityRayTraceResult) {
+    protected void onHitEntity(@Nonnull EntityHitResult entityHitResult) {
         ItemStack weapon = getWeapon();
         double damageAmount = WeaponThrowable.getBaseAttackDamage(weapon);
-        Entity owner = getOwner();
-        Entity hitEntity = entityRayTraceResult.getEntity();
+        var owner = getOwner();
+        var hitEntity = entityHitResult.getEntity();
         if (owner instanceof LivingEntity) {
             damageAmount += ((LivingEntity) owner).getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
         }
-        if (hitEntity instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity) hitEntity;
+        if (hitEntity instanceof LivingEntity livingEntity) {
             damageAmount += EnchantmentHelper.getDamageBonus(weapon, livingEntity.getMobType());
         }
-        DamageSource damageSource = DamageSources.thrownWeapon(this, owner != null ? owner : this);
+        var damageSource = DamageSources.thrownWeapon(this, owner != null ? owner : this);
         if (hitEntity.hurt(damageSource, (float) damageAmount)) {
-            if (hitEntity instanceof EndermanEntity) {
+            if (hitEntity instanceof EnderMan) {
                 return;
             }
-            if (hitEntity instanceof LivingEntity) {
-                LivingEntity hitLivingEntity = (LivingEntity) hitEntity;
+            if (hitEntity instanceof LivingEntity hitLivingEntity) {
                 if (owner instanceof LivingEntity) {
                     EnchantmentHelper.doPostHurtEffects(hitLivingEntity, owner);
                     EnchantmentHelper.doPostDamageEffects((LivingEntity) owner, hitLivingEntity);
@@ -77,19 +74,19 @@ public class ThrownWeaponEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
-        super.onHitBlock(blockRayTraceResult);
+    protected void onHitBlock(@NotNull BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         setSoundEvent(SoundEvents.WEAPON_HIT_BLOCK.get());
     }
 
     @Override
-    protected SoundEvent getDefaultHitGroundSoundEvent() {
+    protected @NotNull SoundEvent getDefaultHitGroundSoundEvent() {
         return SoundEvents.WEAPON_HIT_BLOCK.get();
     }
 
     @Override
     protected void tickDespawn() {
-        if (this.pickup != PickupStatus.ALLOWED) {
+        if (this.pickup != Pickup.ALLOWED) {
             super.tickDespawn();
         }
     }
@@ -109,13 +106,13 @@ public class ThrownWeaponEntity extends AbstractArrowEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.put("weapon", getWeapon().save(new CompoundNBT()));
+        tag.put("weapon", getWeapon().save(new CompoundTag()));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         setWeapon(ItemStack.of(tag.getCompound("weapon")));
     }
@@ -127,7 +124,7 @@ public class ThrownWeaponEntity extends AbstractArrowEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public @NotNull Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

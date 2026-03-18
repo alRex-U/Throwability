@@ -1,40 +1,35 @@
 package com.alrex.throwability.common.entity;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.network.NetworkHooks;
 
-@OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownGunPowderEntity extends ProjectileItemEntity implements IRendersAsItem {
-    public ThrownGunPowderEntity(EntityType<? extends ThrownGunPowderEntity> entityType, World level) {
+public class ThrownGunPowderEntity extends ThrowableItemProjectile {
+    public ThrownGunPowderEntity(EntityType<? extends ThrownGunPowderEntity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public ThrownGunPowderEntity(World level, LivingEntity entity) {
+    public ThrownGunPowderEntity(Level level, LivingEntity entity) {
         super(EntityTypes.THROWN_GUNPOWDER.get(), entity, level);
     }
 
     @Override
-    protected void onHit(RayTraceResult p_70227_1_) {
-        super.onHit(p_70227_1_);
+    protected void onHit(HitResult hitResult) {
+        super.onHit(hitResult);
 
         if (!level.isClientSide) {
-            Vector3d pos = position();
-            level.explode(this, pos.x, pos.y, pos.z, 0.8f, Explosion.Mode.NONE);
+            var pos = position();
+            level.explode(this, pos.x, pos.y, pos.z, 0.8f, Explosion.BlockInteraction.NONE);
+            discard();
         }
 
-        remove();
     }
 
     @Override
@@ -43,7 +38,7 @@ public class ThrownGunPowderEntity extends ProjectileItemEntity implements IRend
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

@@ -2,30 +2,30 @@ package com.alrex.throwability.mixin.common;
 
 import com.alrex.throwability.common.thrown.IThrown;
 import com.alrex.throwability.utils.BlockUtils;
-import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.DirectionalPlaceContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.DirectionalPlaceContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ConcretePowderBlock;
+import net.minecraft.world.level.block.FallingBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -42,7 +42,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
     @Shadow
     public boolean dropItem;
     @Shadow
-    public CompoundNBT blockData;
+    public CompoundTag blockData;
     @Shadow
     private BlockState blockState;
     @Shadow
@@ -57,7 +57,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
     @Unique
     private boolean throwability$oldVerticalCollision = false;
 
-    public FallingBlockEntityMixin(EntityType<?> type, World level) {
+    public FallingBlockEntityMixin(EntityType<?> type, Level level) {
         super(type, level);
     }
 
@@ -72,7 +72,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
     }
 
     @Unique
-    private static boolean throwability$tryPlaceBlock(World level, Block thisBlock, BlockState blockState, CompoundNBT blockData, BlockPos placedPosition, Direction collidedDirection, boolean concreteWithWater, boolean onGround) {
+    private static boolean throwability$tryPlaceBlock(Level level, Block thisBlock, BlockState blockState, CompoundTag blockData, BlockPos placedPosition, Direction collidedDirection, boolean concreteWithWater, boolean onGround) {
         DirectionalPlaceContext placeContext = new DirectionalPlaceContext(
                 level, placedPosition, collidedDirection, ItemStack.EMPTY, collidedDirection.getOpposite()
         );
@@ -83,8 +83,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         boolean canSurvive = blockState.canSurvive(level, placedPosition);
         if (!canSurvive) {
             Item thisBlockItem = thisBlock.asItem();
-            if (thisBlock.asItem() instanceof BlockItem) {
-                blockState = ((BlockItem) thisBlockItem).getPlacementState(placeContext);
+            if (thisBlock.asItem() instanceof BlockItem blockItem) {
+                blockState = blockItem.getPlacementState(placeContext);
             }
             if (blockState == null || !blockState.canSurvive(level, placedPosition)) return false;
             thisBlock = blockState.getBlock();
@@ -97,8 +97,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         }
 
         if (level.setBlock(placedPosition, blockState, 3)) {
-            if (blockData != null && blockState.hasTileEntity()) {
-                TileEntity tileentity = level.getBlockEntity(placedPosition);
+            if (blockData != null && blockState.hasBlockEntity()) {
+                var tileentity = level.getBlockEntity(placedPosition);
                 if (tileentity != null) {
                     BlockUtils.applyTagToTileEntity(tileentity, blockData, blockState);
                 }
@@ -109,12 +109,12 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
     }
 
     @Unique
-    private static boolean throwability$tryForceReplaceBlock(World level, BlockState blockState, CompoundNBT blockData, BlockPos placedPosition) {
+    private static boolean throwability$tryForceReplaceBlock(Level level, BlockState blockState, CompoundTag blockData, BlockPos placedPosition) {
         if (level.destroyBlock(placedPosition, true)
                 && level.setBlock(placedPosition, blockState, 3)
         ) {
-            if (blockData != null && blockState.hasTileEntity()) {
-                TileEntity tileentity = level.getBlockEntity(placedPosition);
+            if (blockData != null && blockState.hasBlockEntity()) {
+                var tileentity = level.getBlockEntity(placedPosition);
                 if (tileentity != null) {
                     BlockUtils.applyTagToTileEntity(tileentity, blockData, blockState);
                 }
@@ -122,15 +122,6 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
             return true;
         }
         return false;
-    }
-
-    @Unique
-    private void throwability$dropAdditionalResources() {
-        TileEntity tileEntity = blockState.createTileEntity(level);
-        if (tileEntity instanceof IInventory) {
-            BlockUtils.applyTagToTileEntity(tileEntity, blockData, blockState);
-            InventoryHelper.dropContents(level, blockPosition(), (IInventory) tileEntity);
-        }
     }
 
     @Unique
@@ -140,11 +131,11 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
 
     @Unique
     @Nullable
-    private Direction throwability$getCollidedDirection(Vector3d movement) {
+    private Direction throwability$getCollidedDirection(Vec3 movement) {
         if (!throwability$oldVerticalCollision && verticalCollision) {
             return getDeltaMovement().y > 0 ? Direction.UP : Direction.DOWN;
         } else if (!throwability$oldHorizontalCollision && horizontalCollision) {
-            Vector3d deltaMovement = getDeltaMovement();
+            Vec3 deltaMovement = getDeltaMovement();
             if (Math.abs(movement.x()) > 1e-4 && Math.abs(deltaMovement.x()) <= 1e-4) {
                 return movement.x() > 0 ? Direction.EAST : Direction.WEST;
             } else if (Math.abs(movement.z()) > 1e-4 && Math.abs(deltaMovement.z()) <= 1e-4) {
@@ -160,14 +151,14 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.7, -0.5, 0.7));
         if (placedPositionBlockState.is(Blocks.MOVING_PISTON)) return;
 
-        this.remove();
+        discard();
 
-        if (this.cancelDrop && thisBlock instanceof FallingBlock) {
-            ((FallingBlock) thisBlock).onBroken(this.level, placedPosition, (FallingBlockEntity) (Object) this);
+        if (this.cancelDrop && thisBlock instanceof FallingBlock fallingBlock) {
+            fallingBlock.onBrokenAfterFall(this.level, placedPosition, (FallingBlockEntity) (Object) this);
             return;
         }
 
-        boolean hasTileEntity = thisBlock.hasTileEntity(blockState);
+        boolean hasTileEntity = thisBlock.defaultBlockState().hasBlockEntity();
 
         if (!hasTileEntity) {
             if (throwability$tryPlaceBlock(level, thisBlock, blockState, blockData, placedPosition, collidedDirection, concreteWithWater, onGround)) {
@@ -189,7 +180,6 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
             }
         }
         if (this.dropItem && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            throwability$dropAdditionalResources();
             this.spawnAtLocation(thisBlock);
         }
     }
@@ -200,7 +190,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         ci.cancel();
 
         if (this.blockState.isAir()) {
-            this.remove();
+            discard();
             return;
         }
 
@@ -210,7 +200,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
             if (this.level.getBlockState(blockPos).is(thisBlock)) {
                 this.level.removeBlock(blockPos, false);
             } else if (!this.level.isClientSide) {
-                this.remove();
+                discard();
                 return;
             }
         }
@@ -223,7 +213,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         {
             throwability$oldHorizontalCollision = horizontalCollision;
             throwability$oldVerticalCollision = verticalCollision;
-            Vector3d deltaMovement = getDeltaMovement();
+            Vec3 deltaMovement = getDeltaMovement();
             this.move(MoverType.SELF, this.getDeltaMovement());
             collidedDirection = throwability$getCollidedDirection(deltaMovement);
         }
@@ -233,9 +223,9 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
 
         if (thisBlock instanceof ConcretePowderBlock) {
             if (getDeltaMovement().lengthSqr() > 1.0) {
-                BlockRayTraceResult blockraytraceresult = this.level.clip(new RayTraceContext(new Vector3d(this.xo, this.yo, this.zo), this.position(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, this));
-                if (blockraytraceresult.getType() != RayTraceResult.Type.MISS && this.level.getFluidState(blockraytraceresult.getBlockPos()).is(FluidTags.WATER)) {
-                    placedPosition = blockraytraceresult.getBlockPos();
+                var blockHitResult = this.level.clip(new ClipContext(new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this));
+                if (blockHitResult.getType() != HitResult.Type.MISS && this.level.getFluidState(blockHitResult.getBlockPos()).is(FluidTags.WATER)) {
+                    placedPosition = blockHitResult.getBlockPos();
                     concreteWithWater = true;
                 }
             } else {
@@ -248,7 +238,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
                 if (this.dropItem && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                     this.spawnAtLocation(thisBlock);
                 }
-                this.remove();
+                discard();
             }
             return;
         }

@@ -1,31 +1,28 @@
 package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.client.particle.ParticleUtils;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.IRendersAsItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.ProjectileItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
-@OnlyIn(value = Dist.CLIENT, _interface = IRendersAsItem.class)
-public class ThrownBlazeRodEntity extends ProjectileItemEntity implements IRendersAsItem {
+public class ThrownBlazeRodEntity extends ThrowableItemProjectile {
 
-    public ThrownBlazeRodEntity(EntityType<? extends ThrownBlazeRodEntity> type, World level) {
+    public ThrownBlazeRodEntity(EntityType<? extends ThrownBlazeRodEntity> type, Level level) {
         super(type, level);
     }
 
-    public ThrownBlazeRodEntity(World level, LivingEntity thrower) {
+    public ThrownBlazeRodEntity(Level level, LivingEntity thrower) {
         super(EntityTypes.THROWN_BLAZE_ROD.get(), thrower, level);
     }
 
@@ -40,11 +37,11 @@ public class ThrownBlazeRodEntity extends ProjectileItemEntity implements IRende
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult blockRayTraceResult) {
-        super.onHitBlock(blockRayTraceResult);
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         if (!level.isClientSide) {
             int maxXOffset = 2, maxYOffset = 2, maxZOffset = 2;
-            switch (blockRayTraceResult.getDirection().getAxis()) {
+            switch (blockHitResult.getDirection().getAxis()) {
                 case X:
                     maxXOffset = 1;
                     break;
@@ -55,21 +52,21 @@ public class ThrownBlazeRodEntity extends ProjectileItemEntity implements IRende
                     maxZOffset = 1;
                     break;
             }
-            level.explode(this, getX(), getY(), getZ(), 1f, Explosion.Mode.BREAK);
+            level.explode(this, getX(), getY(), getZ(), 1f, Explosion.BlockInteraction.BREAK);
             for (int yOffset = -maxYOffset; yOffset <= maxYOffset; yOffset++) {
                 for (int xOffset = -maxXOffset; xOffset <= maxXOffset; xOffset++) {
                     for (int zOffset = -maxZOffset; zOffset <= maxZOffset; zOffset++) {
                         if (random.nextDouble() > 0.65) continue;
-                        BlockPos pos = blockPosition().offset(xOffset, yOffset, zOffset);
+                        var pos = blockPosition().offset(xOffset, yOffset, zOffset);
                         if (!level.isLoaded(pos)) continue;
-                        if (AbstractFireBlock.canBePlacedAt(level, pos, blockRayTraceResult.getDirection())) {
-                            level.setBlockAndUpdate(pos, AbstractFireBlock.getState(level, pos));
+                        if (FireBlock.canBePlacedAt(level, pos, blockHitResult.getDirection())) {
+                            level.setBlockAndUpdate(pos, FireBlock.getState(level, pos));
                         }
                     }
                 }
             }
             level.broadcastEntityEvent(this, (byte) 3);
-            remove();
+            discard();
         }
     }
 
@@ -83,7 +80,7 @@ public class ThrownBlazeRodEntity extends ProjectileItemEntity implements IRende
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
