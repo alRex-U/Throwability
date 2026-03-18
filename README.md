@@ -1,6 +1,6 @@
 # Throwability
 
-![Logo](logo.png)
+![Logo](logo/logo_v3.png)
 
 ---
 
