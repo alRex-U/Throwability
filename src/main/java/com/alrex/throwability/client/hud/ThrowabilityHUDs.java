@@ -1,7 +1,8 @@
 package com.alrex.throwability.client.hud;
 
-import net.minecraftforge.client.gui.IIngameOverlay;
-import net.minecraftforge.client.gui.OverlayRegistry;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
 
@@ -9,7 +10,7 @@ public class ThrowabilityHUDs {
     @Nullable
     private static ThrowabilityHUDs INSTANCE;
     @Nullable
-    private IIngameOverlay throwPowerMeter;
+    private IGuiOverlay throwPowerMeter;
 
     public static ThrowabilityHUDs getInstance() {
         if (INSTANCE == null) {
@@ -18,7 +19,8 @@ public class ThrowabilityHUDs {
         return INSTANCE;
     }
 
-    public void setup() {
-        throwPowerMeter = OverlayRegistry.registerOverlayTop("Throwing Power", new ThrowPowerMeter());
+    @SubscribeEvent
+    public void onSetup(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("power_meter", throwPowerMeter = new ThrowPowerMeter());
     }
 }

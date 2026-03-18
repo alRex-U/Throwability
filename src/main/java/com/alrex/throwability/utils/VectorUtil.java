@@ -1,9 +1,8 @@
 package com.alrex.throwability.utils;
 
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Random;
 
 public class VectorUtil {
 	public static double toYawDegree(Vec3 vec) {
@@ -18,7 +17,7 @@ public class VectorUtil {
 		return new Vec3(-Math.sin(Math.toRadians(degree)), 0, Math.cos(Math.toRadians(degree)));
 	}
 
-	public static Vec3 getRandomNormalizedVec(Random random) {
+	public static Vec3 getRandomNormalizedVec(RandomSource random) {
 		var vec = new Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5).normalize();
 		if (vec == Vec3.ZERO) {
 			return new Vec3(0, 1, 0);

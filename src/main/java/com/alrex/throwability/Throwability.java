@@ -2,7 +2,6 @@ package com.alrex.throwability;
 
 import com.alrex.throwability.client.animation.Animations;
 import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
-import com.alrex.throwability.client.hud.ThrowabilityHUDs;
 import com.alrex.throwability.client.render.entity.EntityRenderers;
 import com.alrex.throwability.common.entity.EntityTypes;
 import com.alrex.throwability.common.sound.SoundEvents;
@@ -64,7 +63,6 @@ public class Throwability {
 	private void doClientStuff(final FMLClientSetupEvent event) {
 		Animations.register(ThrowingAnimation.class, ThrowingAnimation::new);
 		EntityRenderers.registerRenderers();
-		ThrowabilityHUDs.getInstance().setup();
 	}
 
 	private void onLoadCompleted(final FMLLoadCompleteEvent event) {

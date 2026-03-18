@@ -6,7 +6,6 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "carryon.RenderEventsMixin",
     "client.AbstractClientPlayerEntityMixin",
     "client.GameRendererMixin",
     "client.ItemInHandRendererMixin",

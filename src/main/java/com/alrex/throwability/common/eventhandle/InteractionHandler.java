@@ -12,7 +12,7 @@ public class InteractionHandler {
 
         if (entity.isRemoved()) return;
         if (entity instanceof ItemEntity || entity instanceof ThrownWeaponEntity) {
-            entity.playerTouch(event.getPlayer());
+            entity.playerTouch(event.getEntity());
         }
     }
 }

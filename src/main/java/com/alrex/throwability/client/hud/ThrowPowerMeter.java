@@ -18,11 +18,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 @OnlyIn(Dist.CLIENT)
-public class ThrowPowerMeter extends GuiComponent implements IIngameOverlay {
+public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 	private static final ResourceLocation ICON_LOCATION = new ResourceLocation(Throwability.MOD_ID, "textures/gui/gui_icon.png");
 
 	public static void blitWithColor(PoseStack matrixStack, int x, int y, int xTex, int yTex, int width, int height, int texWidth, int texHeight, int r, int g, int b, int a) {
@@ -36,12 +36,11 @@ public class ThrowPowerMeter extends GuiComponent implements IIngameOverlay {
 		bufferBuilder.vertex(pose, eX, eY, 0f).color(r, g, b, a).uv(eXTex, eYTex).endVertex();
 		bufferBuilder.vertex(pose, eX, sY, 0f).color(r, g, b, a).uv(eXTex, sYTex).endVertex();
 		bufferBuilder.vertex(pose, sX, sY, 0f).color(r, g, b, a).uv(sXTex, sYTex).endVertex();
-		bufferBuilder.end();
-		BufferUploader.end(bufferBuilder);
+		BufferUploader.drawWithShader(bufferBuilder.end());
 	}
 
 	@Override
-	public void render(ForgeIngameGui forgeIngameGui, PoseStack poseStack, float partialTick, int width, int height) {
+	public void render(ForgeGui forgeIngameGui, PoseStack poseStack, float partialTick, int width, int height) {
 		var mc = Minecraft.getInstance();
 		Player player = mc.player;
 		if (mc.options.getCameraType() != CameraType.FIRST_PERSON) return;
@@ -157,5 +156,4 @@ public class ThrowPowerMeter extends GuiComponent implements IIngameOverlay {
 			);
 		}
 	}
-
 }

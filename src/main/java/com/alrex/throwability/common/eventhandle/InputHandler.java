@@ -8,7 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class InputHandler {
     @SubscribeEvent
-    public static void onInput(InputEvent.ClickInputEvent event) {
+    public static void onInput(InputEvent.InteractionKeyMappingTriggered event) {
         var player = Minecraft.getInstance().player;
         if (!(player instanceof IThrowabilityProvider provider)) return;
         AbstractThrowingAbility ability = (provider).getThrowAbility();

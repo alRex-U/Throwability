@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.common.model.TransformationHelper;
+import net.minecraftforge.common.util.TransformationHelper;
 
 public class ThrownWeaponRenderer extends EntityRenderer<ThrownWeaponEntity> {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/arrow");

@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class EntityTypes {
-    private static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITIES, Throwability.MOD_ID);
+    private static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Throwability.MOD_ID);
     public static RegistryObject<EntityType<ThrownWeaponEntity>> THROWN_WEAPON = REGISTRY.register(
             "thrown_weapon",
             () -> EntityType.Builder
