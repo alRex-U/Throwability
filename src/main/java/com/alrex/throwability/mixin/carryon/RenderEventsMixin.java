@@ -68,8 +68,8 @@ public abstract class RenderEventsMixin {
         throwability$drawingPlayer = null;
     }
 
-    @Inject(method = "renderArmPost", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/model/ModelRenderer;render(Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;II)V"), remap = false)
-    private void onRenderArm(ModelRenderer arm, float x, float z, boolean right, boolean sneaking, int light, MatrixStack matrix, IVertexBuilder builder, CallbackInfo ci) {
+    @Inject(method = "renderArmPost", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/model/ModelRenderer;render(Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;II)V"))
+    private void onRenderArmPost(ModelRenderer arm, float x, float z, boolean right, boolean sneaking, int light, MatrixStack matrix, IVertexBuilder builder, CallbackInfo ci) {
         if (!(throwability$drawingPlayer instanceof IThrowabilityProvider)) return;
         AbstractThrowingAbility abstractThrowingAbility = ((IThrowabilityProvider) throwability$drawingPlayer).getThrowAbility();
         if (!abstractThrowingAbility.isCharging()) return;

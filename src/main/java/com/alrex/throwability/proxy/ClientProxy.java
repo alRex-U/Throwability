@@ -7,6 +7,7 @@ import com.alrex.throwability.client.input.KeyRecorder;
 import com.alrex.throwability.common.capability.Capabilities;
 import com.alrex.throwability.common.eventhandle.InputHandler;
 import com.alrex.throwability.common.eventhandle.TickEventHandler;
+import com.alrex.throwability.common.eventhandle.ToolTipEventHandler;
 import com.alrex.throwability.common.network.ItemThrowMessage;
 import com.alrex.throwability.common.network.SyncThrowStateMessage;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,6 +42,7 @@ public class ClientProxy extends CommonProxy {
 		super.registerHandlers(eventBus);
 		eventBus.register(ThrowabilityAnimation.class);
 		eventBus.register(InputHandler.class);
+		eventBus.register(ToolTipEventHandler.class);
 		eventBus.register(new ThrowPowerMeter());
 	}
 

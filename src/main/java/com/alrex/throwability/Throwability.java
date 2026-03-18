@@ -59,12 +59,11 @@ public class Throwability {
 	private void setup(final FMLCommonSetupEvent event) {
 		PROXY.registerMessages(CHANNEL);
 		PROXY.registerHandlers(MinecraftForge.EVENT_BUS);
-
-		EntityRenderers.register(Minecraft.getInstance().getEntityRenderDispatcher());
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
 		Animations.register(ThrowingAnimation.class, ThrowingAnimation::new);
+		EntityRenderers.register(Minecraft.getInstance().getEntityRenderDispatcher());
 	}
 
 	private void onLoadCompleted(final FMLLoadCompleteEvent event) {

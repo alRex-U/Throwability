@@ -31,3 +31,9 @@ mandatory = false
 versionRange = "${naturot_version_range}"
 ordering = "AFTER"
 side = "BOTH"
+[[dependencies.throwability]]
+modId = "carryon"
+mandatory = false
+versionRange = "${carryon_version_range}"
+ordering = "AFTER"
+side = "BOTH"
