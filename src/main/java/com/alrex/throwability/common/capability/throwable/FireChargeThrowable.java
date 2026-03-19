@@ -19,7 +19,7 @@ public class FireChargeThrowable implements IThrowable {
             Vec3 lookAngle = thrower.getLookAngle();
             Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);
             var entity = new SmallFireball(
-                    thrower.level, thrower, lookAngle.x(), lookAngle.y(), lookAngle.z()
+                    thrower.level(), thrower, lookAngle.x(), lookAngle.y(), lookAngle.z()
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.

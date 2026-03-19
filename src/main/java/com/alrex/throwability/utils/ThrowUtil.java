@@ -23,7 +23,7 @@ public class ThrowUtil {
 			ItemThrowMessage.send(player, inventoryIndex, chargingTick, type);
 		}
 		player.swing(InteractionHand.MAIN_HAND);
-		if (player.level.isClientSide()) {
+		if (player.level().isClientSide()) {
 			itemThrowable.onThrownOnClient(player, selectedItem, type, chargingTick);
 		} else {
 			Entity entity;
@@ -37,7 +37,7 @@ public class ThrowUtil {
 				entity = itemEntity;
 			}
             if (entity != null) {
-                player.level.addFreshEntity(entity);
+				player.level().addFreshEntity(entity);
             }
 		}
 	}

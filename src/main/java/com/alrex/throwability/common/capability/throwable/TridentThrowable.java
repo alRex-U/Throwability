@@ -20,7 +20,7 @@ public class TridentThrowable implements IThrowable {
         if (item instanceof TridentItem) {
             stack.hurtAndBreak(1, thrower, (player) -> player.broadcastBreakEvent(thrower.getUsedItemHand()));
             var entity = new ThrownTrident(
-                    thrower.level, thrower, stack
+                    thrower.level(), thrower, stack
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4.

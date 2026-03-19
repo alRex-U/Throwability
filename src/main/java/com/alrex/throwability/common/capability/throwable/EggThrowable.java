@@ -17,7 +17,7 @@ public class EggThrowable implements IThrowable {
         Item item = stack.getItem();
         if (item instanceof EggItem) {
             var entity = new ThrownEgg(
-                    thrower.level, thrower
+                    thrower.level(), thrower
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4.

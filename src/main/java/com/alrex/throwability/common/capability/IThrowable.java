@@ -15,7 +15,7 @@ public interface IThrowable {
 
     default Entity throwAsItem(Player thrower, ItemStack stack, int chargedTick) {
         var itemEntity = new ItemEntity(
-                thrower.level, thrower.getX(), thrower.getEyeY() - 0.3, thrower.getZ(), stack
+                thrower.level(), thrower.getX(), thrower.getEyeY() - 0.3, thrower.getZ(), stack
         );
         itemEntity.setPickUpDelay(20);
         double scale = (chargedTick / 20.);

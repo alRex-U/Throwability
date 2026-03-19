@@ -14,7 +14,7 @@ public class GhastTearThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.GHAST_TEAR) {
-            ThrownGhastTearEntity entity = new ThrownGhastTearEntity(thrower.level, thrower);
+            ThrownGhastTearEntity entity = new ThrownGhastTearEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

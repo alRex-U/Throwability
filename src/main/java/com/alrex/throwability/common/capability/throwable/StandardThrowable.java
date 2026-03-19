@@ -97,7 +97,7 @@ public class StandardThrowable implements IThrowable {
             }
         }
 
-        Entity entity = stack.getItem().createEntity(thrower.level, thrower, stack);
+        Entity entity = stack.getItem().createEntity(thrower.level(), thrower, stack);
         if (entity == null) {
             return throwAsItem(thrower, stack, chargedTick);
         }

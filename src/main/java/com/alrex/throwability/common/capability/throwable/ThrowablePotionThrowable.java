@@ -17,7 +17,7 @@ public class ThrowablePotionThrowable implements IThrowable {
         Item item = stack.getItem();
         if (item instanceof ThrowablePotionItem) {
             Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);
-            var entity = new ThrownPotion(thrower.level, thrower);
+            var entity = new ThrownPotion(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 5.
                     * ThrowUtil.getSpeedScale(thrower)

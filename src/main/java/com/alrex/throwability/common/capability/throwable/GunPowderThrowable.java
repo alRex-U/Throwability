@@ -14,7 +14,7 @@ public class GunPowderThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.GUNPOWDER) {
-            ThrownGunPowderEntity entity = new ThrownGunPowderEntity(thrower.level, thrower);
+            ThrownGunPowderEntity entity = new ThrownGunPowderEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

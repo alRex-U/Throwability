@@ -147,21 +147,21 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
 
     @Unique
     private void throwability$trySpawnAsBlock(Block thisBlock, BlockPos placedPosition, Direction collidedDirection, boolean concreteWithWater) {
-        BlockState placedPositionBlockState = this.level.getBlockState(placedPosition);
+        BlockState placedPositionBlockState = this.level().getBlockState(placedPosition);
         this.setDeltaMovement(this.getDeltaMovement().multiply(0.7, -0.5, 0.7));
         if (placedPositionBlockState.is(Blocks.MOVING_PISTON)) return;
 
         discard();
 
         if (this.cancelDrop && thisBlock instanceof FallingBlock fallingBlock) {
-            fallingBlock.onBrokenAfterFall(this.level, placedPosition, (FallingBlockEntity) (Object) this);
+            fallingBlock.onBrokenAfterFall(this.level(), placedPosition, (FallingBlockEntity) (Object) this);
             return;
         }
 
         boolean hasTileEntity = thisBlock.defaultBlockState().hasBlockEntity();
 
         if (!hasTileEntity) {
-            if (throwability$tryPlaceBlock(level, thisBlock, blockState, blockData, placedPosition, collidedDirection, concreteWithWater, onGround)) {
+            if (throwability$tryPlaceBlock(level(), thisBlock, blockState, blockData, placedPosition, collidedDirection, concreteWithWater, onGround())) {
                 return;
             }
         } else {
@@ -169,17 +169,17 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
             for (int xOffset : offsets) {
                 for (int yOffset : offsets) {
                     for (int zOffset : offsets) {
-                        if (throwability$tryPlaceBlock(level, thisBlock, blockState, blockData, placedPosition.offset(xOffset, yOffset, zOffset), collidedDirection, concreteWithWater, onGround)) {
+                        if (throwability$tryPlaceBlock(level(), thisBlock, blockState, blockData, placedPosition.offset(xOffset, yOffset, zOffset), collidedDirection, concreteWithWater, onGround())) {
                             return;
                         }
                     }
                 }
             }
-            if (throwability$tryForceReplaceBlock(level, blockState, blockData, placedPosition)) {
+            if (throwability$tryForceReplaceBlock(level(), blockState, blockData, placedPosition)) {
                 return;
             }
         }
-        if (this.dropItem && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             this.spawnAtLocation(thisBlock);
         }
     }
@@ -197,9 +197,9 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
         Block thisBlock = blockState.getBlock();
         if (this.time++ == 0) {
             BlockPos blockPos = this.blockPosition();
-            if (this.level.getBlockState(blockPos).is(thisBlock)) {
-                this.level.removeBlock(blockPos, false);
-            } else if (!this.level.isClientSide) {
+            if (this.level().getBlockState(blockPos).is(thisBlock)) {
+                this.level().removeBlock(blockPos, false);
+            } else if (!this.level().isClientSide) {
                 discard();
                 return;
             }
@@ -223,19 +223,19 @@ public abstract class FallingBlockEntityMixin extends Entity implements IThrown 
 
         if (thisBlock instanceof ConcretePowderBlock) {
             if (getDeltaMovement().lengthSqr() > 1.0) {
-                var blockHitResult = this.level.clip(new ClipContext(new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this));
-                if (blockHitResult.getType() != HitResult.Type.MISS && this.level.getFluidState(blockHitResult.getBlockPos()).is(FluidTags.WATER)) {
+                var blockHitResult = this.level().clip(new ClipContext(new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this));
+                if (blockHitResult.getType() != HitResult.Type.MISS && this.level().getFluidState(blockHitResult.getBlockPos()).is(FluidTags.WATER)) {
                     placedPosition = blockHitResult.getBlockPos();
                     concreteWithWater = true;
                 }
             } else {
-                concreteWithWater = this.level.getFluidState(placedPosition).is(FluidTags.WATER);
+                concreteWithWater = this.level().getFluidState(placedPosition).is(FluidTags.WATER);
             }
         }
 
         if (!horizontalCollision && !verticalCollision && !concreteWithWater) {
             if (throwability$checkDropByLifetime(placedPosition)) {
-                if (this.dropItem && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                     this.spawnAtLocation(thisBlock);
                 }
                 discard();

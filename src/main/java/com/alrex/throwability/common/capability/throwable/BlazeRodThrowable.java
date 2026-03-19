@@ -13,7 +13,7 @@ public class BlazeRodThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.BLAZE_ROD) {
-            ThrownBlazeRodEntity entity = new ThrownBlazeRodEntity(thrower.level, thrower);
+            ThrownBlazeRodEntity entity = new ThrownBlazeRodEntity(thrower.level(), thrower);
             var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

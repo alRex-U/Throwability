@@ -21,7 +21,7 @@ public class TNTThrowable implements IThrowable {
         if (item == Items.TNT) {
             Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);
             var entity = new PrimedTnt(
-                    thrower.level, pos.x(), pos.y(), pos.z(), thrower
+                    thrower.level(), pos.x(), pos.y(), pos.z(), thrower
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double phase = Mth.clamp(chargedTick / (double) getMaxChargeTick(stack), 0, 1);

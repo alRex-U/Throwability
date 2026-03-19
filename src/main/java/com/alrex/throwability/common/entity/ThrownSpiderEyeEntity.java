@@ -2,6 +2,7 @@ package com.alrex.throwability.common.entity;
 
 import com.alrex.throwability.client.particle.ParticleUtils;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -29,12 +30,12 @@ public class ThrownSpiderEyeEntity extends ThrowableItemProjectile {
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         super.onHitEntity(entityHitResult);
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             Entity entity = entityHitResult.getEntity();
             if (entity instanceof LivingEntity) {
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 30, 2));
             }
-            level.broadcastEntityEvent(this, (byte) 4);
+            level().broadcastEntityEvent(this, (byte) 4);
             discard();
         }
     }
@@ -42,8 +43,8 @@ public class ThrownSpiderEyeEntity extends ThrowableItemProjectile {
     @Override
     protected void onHitBlock(BlockHitResult blockHitResult) {
         super.onHitBlock(blockHitResult);
-        if (!level.isClientSide) {
-            level.broadcastEntityEvent(this, (byte) 3);
+        if (!level().isClientSide) {
+            level().broadcastEntityEvent(this, (byte) 3);
             discard();
         }
     }
@@ -54,12 +55,12 @@ public class ThrownSpiderEyeEntity extends ThrowableItemProjectile {
         if (eventID == 3) {
             var particleData = ParticleUtils.getItemParticle(null, getItem());
             for (int i = 0; i < 8; i++) {
-                level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
+                level().addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
         } else if (eventID == 4) {
             ParticleUtils.spawnScatteringParticle(
                     ParticleUtils.getItemParticle(null, getItem()),
-                    level, position(), random, 0.2, 0.08, 16
+                    level(), position(), random, 0.2, 0.08, 16
             );
         }
     }
@@ -70,7 +71,7 @@ public class ThrownSpiderEyeEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

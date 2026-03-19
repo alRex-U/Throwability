@@ -10,16 +10,16 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class SoundEvents {
     private static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Throwability.MOD_ID);
-    public static final RegistryObject<SoundEvent> THROW = REGISTRY.register("throw", () -> new SoundEvent(
+    public static final RegistryObject<SoundEvent> THROW = REGISTRY.register("throw", () -> SoundEvent.createVariableRangeEvent(
             new ResourceLocation(Throwability.MOD_ID, "throwability.throw"))
     );
-    public static final RegistryObject<SoundEvent> WEAPON_THROW = REGISTRY.register("weapon.throw", () -> new SoundEvent(
+    public static final RegistryObject<SoundEvent> WEAPON_THROW = REGISTRY.register("weapon.throw", () -> SoundEvent.createVariableRangeEvent(
             new ResourceLocation(Throwability.MOD_ID, "throwability.weapon.throw"))
     );
-    public static final RegistryObject<SoundEvent> WEAPON_HIT_ENTITY = REGISTRY.register("weapon_hit.entity", () -> new SoundEvent(
+    public static final RegistryObject<SoundEvent> WEAPON_HIT_ENTITY = REGISTRY.register("weapon_hit.entity", () -> SoundEvent.createVariableRangeEvent(
             new ResourceLocation(Throwability.MOD_ID, "throwability.weapon.hit.entity"))
     );
-    public static final RegistryObject<SoundEvent> WEAPON_HIT_BLOCK = REGISTRY.register("weapon_hit.block", () -> new SoundEvent(
+    public static final RegistryObject<SoundEvent> WEAPON_HIT_BLOCK = REGISTRY.register("weapon_hit.block", () -> SoundEvent.createVariableRangeEvent(
             new ResourceLocation(Throwability.MOD_ID, "throwability.weapon.hit.block"))
     );
 

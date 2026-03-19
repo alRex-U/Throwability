@@ -38,7 +38,7 @@ public class BlockThrowable implements IThrowable {
                 blockState = blockItem.getBlock().defaultBlockState();
             }
             var entity = new FallingBlockEntity(
-                    thrower.level, pos.x(), pos.y(), pos.z(), blockState
+                    thrower.level(), pos.x(), pos.y(), pos.z(), blockState
             );
 
             var throwVec = ThrowUtil.getBasicThrowingVector(thrower);

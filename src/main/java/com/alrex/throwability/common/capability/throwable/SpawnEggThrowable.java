@@ -16,7 +16,7 @@ public class SpawnEggThrowable implements IThrowable {
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof SpawnEggItem) {
-            ThrownSpawnEggEntity entity = new ThrownSpawnEggEntity(thrower.level, thrower, stack);
+            ThrownSpawnEggEntity entity = new ThrownSpawnEggEntity(thrower.level(), thrower, stack);
 
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.

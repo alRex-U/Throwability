@@ -4,6 +4,7 @@ import com.alrex.throwability.client.particle.ParticleUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -31,8 +32,8 @@ public class ThrownGhastTearEntity extends ThrowableItemProjectile {
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
 
-        if (!level.isClientSide) {
-            var nearEntities = level.getEntities(this, getBoundingBox().inflate(4));
+        if (!level().isClientSide) {
+            var nearEntities = level().getEntities(this, getBoundingBox().inflate(4));
             for (var entity : nearEntities) {
                 if (entity instanceof LivingEntity) {
                     ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 3));
@@ -41,7 +42,7 @@ public class ThrownGhastTearEntity extends ThrowableItemProjectile {
             Direction direction = (hitResult instanceof BlockHitResult blockHitResult)
                     ? blockHitResult.getDirection().getOpposite()
                     : null;
-            level.broadcastEntityEvent(this, (byte) (direction == null ? Direction.values().length : direction.ordinal()));
+            level().broadcastEntityEvent(this, (byte) (direction == null ? Direction.values().length : direction.ordinal()));
             discard();
         }
     }
@@ -50,11 +51,11 @@ public class ThrownGhastTearEntity extends ThrowableItemProjectile {
     @Override
     public void handleEntityEvent(byte eventID) {
         if (eventID <= Direction.values().length) {
-            ParticleUtils.spawnScatteringParticle(ParticleTypes.END_ROD, level, position(), random, 0.3, 0.08, 12,
+            ParticleUtils.spawnScatteringParticle(ParticleTypes.END_ROD, level(), position(), random, 0.3, 0.08, 12,
                     eventID == Direction.values().length ? null : Direction.values()[eventID]);
             var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
             for (int i = 0; i < 8; i++) {
-                level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
+                level().addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
         }
     }
@@ -65,7 +66,7 @@ public class ThrownGhastTearEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

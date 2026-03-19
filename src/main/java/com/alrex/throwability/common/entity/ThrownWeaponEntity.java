@@ -5,6 +5,7 @@ import com.alrex.throwability.common.sound.SoundEvents;
 import com.alrex.throwability.common.util.DamageSources;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -56,8 +57,7 @@ public class ThrownWeaponEntity extends AbstractArrow {
         if (hitEntity instanceof LivingEntity livingEntity) {
             damageAmount += EnchantmentHelper.getDamageBonus(weapon, livingEntity.getMobType());
         }
-        var damageSource = DamageSources.thrownWeapon(this, owner != null ? owner : this);
-        if (hitEntity.hurt(damageSource, (float) damageAmount)) {
+        if (hitEntity.hurt(hitEntity.level().damageSources().source(DamageSources.THROWN_WEAPON, this, owner), (float) damageAmount)) {
             if (hitEntity instanceof EnderMan) {
                 return;
             }
@@ -124,7 +124,7 @@ public class ThrownWeaponEntity extends AbstractArrow {
     }
 
     @Override
-    public @NotNull Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

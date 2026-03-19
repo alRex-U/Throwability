@@ -17,7 +17,7 @@ public class ExperienceBottleThrowable implements IThrowable {
         Item item = stack.getItem();
         if (item instanceof ExperienceBottleItem) {
             var entity = new ThrownExperienceBottle(
-                    thrower.level, thrower
+                    thrower.level(), thrower
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 5.

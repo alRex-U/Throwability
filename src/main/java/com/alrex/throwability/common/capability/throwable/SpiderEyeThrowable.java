@@ -14,7 +14,7 @@ public class SpiderEyeThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.SPIDER_EYE) {
-            ThrownSpiderEyeEntity entity = new ThrownSpiderEyeEntity(thrower.level, thrower);
+            ThrownSpiderEyeEntity entity = new ThrownSpiderEyeEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

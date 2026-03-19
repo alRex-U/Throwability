@@ -2,6 +2,7 @@ package com.alrex.throwability.common.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,27 +29,27 @@ public class ThrownDispensibleContainerEntity extends ThrowableItemProjectile {
 
         if (bucket.getItem() instanceof DispensibleContainerItem dispensibleContainerItem) {
             var hitBlockPos = blockHitResult.getBlockPos();
-            if (level.isClientSide()) {
+            if (level().isClientSide()) {
                 if (dispensibleContainerItem instanceof BucketItem bucketItem) {
-                    bucketItem.playEmptySound(null, level, hitBlockPos);
+                    bucketItem.playEmptySound(null, level(), hitBlockPos);
                 }
             } else {
                 BlockPos actualBlockPos;
                 if (dispensibleContainerItem instanceof BucketItem bucketItem) {
-                    actualBlockPos = bucketItem.canBlockContainFluid(level, hitBlockPos, level.getBlockState(hitBlockPos)) ? hitBlockPos : hitBlockPos.relative(blockHitResult.getDirection());
+                    actualBlockPos = bucketItem.canBlockContainFluid(level(), hitBlockPos, level().getBlockState(hitBlockPos)) ? hitBlockPos : hitBlockPos.relative(blockHitResult.getDirection());
                 } else {
                     actualBlockPos = hitBlockPos.relative(blockHitResult.getDirection());
                 }
                 Player owner = getOwner() instanceof Player player ? player : null;
-                if (dispensibleContainerItem.emptyContents(owner, level, actualBlockPos, blockHitResult)) {
-                    dispensibleContainerItem.checkExtraContent(owner, level, bucket, actualBlockPos);
+                if (dispensibleContainerItem.emptyContents(owner, level(), actualBlockPos, blockHitResult)) {
+                    dispensibleContainerItem.checkExtraContent(owner, level(), bucket, actualBlockPos);
                     spawnAtLocation(new ItemStack(Items.BUCKET));
                 } else {
                     spawnAtLocation(getItem().copy());
                 }
             }
         }
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             discard();
         }
     }
@@ -59,7 +60,7 @@ public class ThrownDispensibleContainerEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

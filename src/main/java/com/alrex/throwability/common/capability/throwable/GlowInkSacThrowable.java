@@ -14,7 +14,7 @@ public class GlowInkSacThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.GLOW_INK_SAC) {
-            var entity = new ThrownGlowInkSacEntity(thrower.level, thrower);
+            var entity = new ThrownGlowInkSacEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

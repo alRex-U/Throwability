@@ -13,7 +13,7 @@ public class BlazePowderThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.BLAZE_POWDER) {
-            ThrownBlazePowderEntity entity = new ThrownBlazePowderEntity(thrower.level, thrower);
+            ThrownBlazePowderEntity entity = new ThrownBlazePowderEntity(thrower.level(), thrower);
             var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

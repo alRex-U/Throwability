@@ -3,7 +3,7 @@ package com.alrex.throwability.client.animation.firstperson;
 import com.alrex.throwability.client.animation.impl.ThrowingAnimation;
 import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,7 +15,7 @@ public class FirstPersonAnimationHandler {
         if (!throwingAbility.isCharging()) return;
         if (handSide != player.getMainArm()) return;
         float factor = ThrowingAnimation.getFactor(throwingAbility, partial);
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(factor * 20));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(factor * 20));
     }
 
     public static void applyItemArmTranslation(Player player, AbstractThrowingAbility throwingAbility, PoseStack matrixStack, HumanoidArm handSide, float partial) {

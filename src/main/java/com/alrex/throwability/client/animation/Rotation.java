@@ -1,8 +1,9 @@
 package com.alrex.throwability.client.animation;
 
 
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class Rotation {
     private final float x, y, z;
@@ -26,7 +27,7 @@ public class Rotation {
     }
 
     public static class Builder {
-        private Quaternion q = Quaternion.ONE.copy();
+        private Quaternionf q = new Quaternionf(0, 0, 0, 1);
 
         public Builder() {
         }
@@ -36,29 +37,30 @@ public class Rotation {
         }
 
         public Builder apply(Vector3f axis, float angleRad) {
-            Quaternion newQ = axis.rotation(angleRad);
+            var newQ = new Quaternionf(new AxisAngle4f((float) Math.toRadians(angleRad), axis));
+            ;
             newQ.mul(q);
             q = newQ;
             return this;
         }
 
         public Rotation build() {
-            float xRot, zRot, yRot = (float) Math.asin(2 * (-q.i() * q.k() + q.j() * q.r()));
+            float xRot, zRot, yRot = (float) Math.asin(2 * (-q.x() * q.z() + q.y() * q.w()));
             double cosY = Math.cos(yRot);
             if (Math.abs(cosY) > 1e-4) {
                 xRot = (float) Math.atan2(
-                        q.j() * q.k() + q.i() * q.r(),
-                        q.r() * q.r() + q.k() * q.k() - 0.5
+                        q.y() * q.z() + q.x() * q.w(),
+                        q.w() * q.w() + q.z() * q.z() - 0.5
                 );
                 zRot = (float) Math.atan2(
-                        q.i() * q.j() + q.k() * q.r(),
-                        q.r() * q.r() + q.i() * q.i() - 0.5
+                        q.x() * q.y() + q.z() * q.w(),
+                        q.w() * q.w() + q.x() * q.x() - 0.5
                 );
             } else {
                 xRot = 0;
                 zRot = (float) Math.atan2(
-                        -q.i() * q.j() + q.k() * q.r(),
-                        q.r() * q.r() + q.j() * q.j() - 0.5
+                        -q.x() * q.y() + q.z() * q.w(),
+                        q.w() * q.w() + q.y() * q.y() - 0.5
                 );
             }
             return new Rotation(xRot, yRot, zRot);

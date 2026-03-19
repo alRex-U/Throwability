@@ -2,6 +2,7 @@ package com.alrex.throwability.common.entity;
 
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,7 +36,7 @@ public class ThrownSpawnEggEntity extends ThrowableItemProjectile {
     @Override
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             ItemStack egg = getItem();
             Item item = egg.getItem();
             if (item instanceof SpawnEggItem spawnEggItem) {
@@ -46,7 +47,7 @@ public class ThrownSpawnEggEntity extends ThrowableItemProjectile {
                 }
                 EntityType<?> entitytype = spawnEggItem.getType(egg.getTag());
                 if (entitytype.spawn(
-                        (ServerLevel) this.level,
+                        (ServerLevel) this.level(),
                         egg,
                         owner,
                         blockPosition(),
@@ -70,7 +71,7 @@ public class ThrownSpawnEggEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

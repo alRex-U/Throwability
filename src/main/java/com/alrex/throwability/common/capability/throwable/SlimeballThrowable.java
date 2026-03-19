@@ -14,7 +14,7 @@ public class SlimeballThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.SLIME_BALL) {
-            ThrownSlimeballEntity entity = new ThrownSlimeballEntity(thrower.level, thrower);
+            ThrownSlimeballEntity entity = new ThrownSlimeballEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

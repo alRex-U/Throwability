@@ -8,10 +8,9 @@ import com.alrex.throwability.common.ability.LocalThrowingAbility;
 import com.alrex.throwability.common.ability.ThrowType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -22,15 +21,15 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 @OnlyIn(Dist.CLIENT)
-public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
+public class ThrowPowerMeter implements IGuiOverlay {
 	private static final ResourceLocation ICON_LOCATION = new ResourceLocation(Throwability.MOD_ID, "textures/gui/gui_icon.png");
 
-	public static void blitWithColor(PoseStack matrixStack, int x, int y, int xTex, int yTex, int width, int height, int texWidth, int texHeight, int r, int g, int b, int a) {
+	public static void blitWithColor(GuiGraphics graphics, int x, int y, int xTex, int yTex, int width, int height, int texWidth, int texHeight, int r, int g, int b, int a) {
 		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
 		float sX = x, sY = y, eX = x + width, eY = y + height;
 		float sXTex = xTex / (float) texWidth, sYTex = yTex / (float) texHeight, eXTex = (xTex + width) / (float) texWidth, eYTex = (yTex + height) / (float) texHeight;
-		Matrix4f pose = matrixStack.last().pose();
+		var pose = graphics.pose().last().pose();
 		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 		bufferBuilder.vertex(pose, sX, eY, 0f).color(r, g, b, a).uv(sXTex, eYTex).endVertex();
 		bufferBuilder.vertex(pose, eX, eY, 0f).color(r, g, b, a).uv(eXTex, eYTex).endVertex();
@@ -39,8 +38,9 @@ public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 		BufferUploader.drawWithShader(bufferBuilder.end());
 	}
 
+
 	@Override
-	public void render(ForgeGui forgeIngameGui, PoseStack poseStack, float partialTick, int width, int height) {
+	public void render(ForgeGui forgeIngameGui, GuiGraphics guiGraphics, float partialTick, int width, int height) {
 		var mc = Minecraft.getInstance();
 		Player player = mc.player;
 		if (mc.options.getCameraType() != CameraType.FIRST_PERSON) return;
@@ -50,12 +50,12 @@ public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 
 		RenderSystem.disableBlend();
 
-		renderMeter(poseStack, throwingAbility, partialTick, height, width);
+		renderMeter(guiGraphics, throwingAbility, partialTick, height, width);
 
 		RenderSystem.enableBlend();
 	}
 
-	private void renderMeter(PoseStack stack, AbstractThrowingAbility throwingAbility, float partialTick, int screenHeight, int screenWidth) {
+	private void renderMeter(GuiGraphics graphics, AbstractThrowingAbility throwingAbility, float partialTick, int screenHeight, int screenWidth) {
 		Minecraft mc = Minecraft.getInstance();
 
 		float chargePhase = Mth.clamp((throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick(), 0, 1);
@@ -67,9 +67,8 @@ public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 		final int division = 16;
 		float innerRadius = 4f * guiScale;
 		float outerRadius = 6f * guiScale;
-		Matrix4f pose = stack.last().pose();
+		var pose = graphics.pose().last().pose();
 
-		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 
@@ -129,8 +128,6 @@ public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 		}
 		tesselator.end();
 
-		RenderSystem.enableTexture();
-
 		RenderSystem.setShaderTexture(0, ICON_LOCATION);
 		for (int i = 0; i < ThrowType.values().length; i++) {
 			int yOffset;
@@ -148,7 +145,7 @@ public class ThrowPowerMeter extends GuiComponent implements IGuiOverlay {
 				a = (int) Math.min(200f * fadeInScale, 128f);
 			}
 
-			blitWithColor(stack,
+			blitWithColor(graphics,
 					(int) (screenCenterX - 15 + 11 * i + 1),
 					(int) (screenCenterY + outerRadius + 4 + yOffset),
 					8 * i, 0, 8, 8, 32, 32,

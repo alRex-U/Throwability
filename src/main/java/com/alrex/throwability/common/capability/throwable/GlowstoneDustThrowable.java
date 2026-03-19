@@ -14,7 +14,7 @@ public class GlowstoneDustThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.GLOWSTONE_DUST) {
-            ThrownGlowstoneDustEntity entity = new ThrownGlowstoneDustEntity(thrower.level, thrower);
+            ThrownGlowstoneDustEntity entity = new ThrownGlowstoneDustEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

@@ -14,7 +14,7 @@ public class InkSacThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() == Items.INK_SAC) {
-            ThrownInkSacEntity entity = new ThrownInkSacEntity(thrower.level, thrower);
+            ThrownInkSacEntity entity = new ThrownInkSacEntity(thrower.level(), thrower);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

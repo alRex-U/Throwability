@@ -1,12 +1,12 @@
 package com.alrex.throwability.common.entity;
 
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
@@ -24,9 +24,9 @@ public class ThrownGunPowderEntity extends ThrowableItemProjectile {
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
 
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             var pos = position();
-            level.explode(this, pos.x, pos.y, pos.z, 0.8f, Explosion.BlockInteraction.NONE);
+            level().explode(this, pos.x, pos.y, pos.z, 0.8f, Level.ExplosionInteraction.NONE);
             discard();
         }
 
@@ -38,7 +38,7 @@ public class ThrownGunPowderEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

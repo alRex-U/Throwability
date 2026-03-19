@@ -14,7 +14,7 @@ public class DispensibleContainerThrowable implements IThrowable {
     @Override
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (stack.getItem() instanceof DispensibleContainerItem) {
-            ThrownDispensibleContainerEntity entity = new ThrownDispensibleContainerEntity(thrower.level, thrower, stack);
+            ThrownDispensibleContainerEntity entity = new ThrownDispensibleContainerEntity(thrower.level(), thrower, stack);
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
                     * ThrowUtil.getSpeedScale(thrower)

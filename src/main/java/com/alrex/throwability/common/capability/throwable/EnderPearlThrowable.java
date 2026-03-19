@@ -17,7 +17,7 @@ public class EnderPearlThrowable implements IThrowable {
         Item item = stack.getItem();
         if (item instanceof EnderpearlItem) {
             var entity = new ThrownEnderpearl(
-                    thrower.level, thrower
+                    thrower.level(), thrower
             );
 
             Vec3 pos = ThrowUtil.getBasicThrowingPosition(thrower);

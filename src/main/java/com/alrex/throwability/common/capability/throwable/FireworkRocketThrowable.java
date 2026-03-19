@@ -18,7 +18,7 @@ public class FireworkRocketThrowable implements IThrowable {
         if (item instanceof FireworkRocketItem) {
             Vec3 lookAngle = thrower.getLookAngle();
             FireworkRocketEntity entity = new FireworkRocketEntity(
-                    thrower.level, thrower,
+                    thrower.level(), thrower,
                     lookAngle.x(), lookAngle.y(), lookAngle.z(),
                     stack
             );

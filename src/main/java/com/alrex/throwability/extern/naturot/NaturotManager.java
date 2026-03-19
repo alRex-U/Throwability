@@ -17,7 +17,7 @@ public class NaturotManager extends ExternalModManager {
         NaturotUtils.setRotation(
                 entity,
                 rotAxis,
-                (float) (Mth.clamp(deltaMovement.length() * (0.7 + 0.6 * entity.level.getRandom().nextDouble()), 0, 1) * Math.PI / 4.)
+                (float) (Mth.clamp(deltaMovement.length() * (0.7 + 0.6 * entity.level().getRandom().nextDouble()), 0, 1) * Math.PI / 4.)
         );
     }
 }

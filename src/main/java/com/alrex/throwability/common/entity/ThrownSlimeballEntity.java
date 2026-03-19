@@ -5,6 +5,7 @@ import com.alrex.throwability.utils.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -31,9 +32,9 @@ public class ThrownSlimeballEntity extends ThrowableItemProjectile {
     @Override
     public void tick() {
         super.tick();
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             if (this.tickCount % 4 == 0) {
-                ParticleUtils.spawnScatteringParticle(ParticleTypes.ITEM_SLIME, level, position(), random, 0.1, 0.04, 1, getDeltaMovement());
+                ParticleUtils.spawnScatteringParticle(ParticleTypes.ITEM_SLIME, level(), position(), random, 0.1, 0.04, 1, getDeltaMovement());
             }
         }
     }
@@ -43,8 +44,8 @@ public class ThrownSlimeballEntity extends ThrowableItemProjectile {
         super.onHitBlock(blockHitResult);
         boundingCount++;
         if (boundingCount > 3) {
-            if (!level.isClientSide) {
-                level.broadcastEntityEvent(this, (byte) 3);
+            if (!level().isClientSide) {
+                level().broadcastEntityEvent(this, (byte) 3);
                 discard();
             }
         } else {
@@ -58,12 +59,12 @@ public class ThrownSlimeballEntity extends ThrowableItemProjectile {
         if (eventID == 3) {
             var particleData = ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem());
             for (int i = 0; i < 8; i++) {
-                level.addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
+                level().addParticle(particleData, getX(), getY(), getZ(), 0, 0, 0);
             }
         } else if (eventID == 4) {
             ParticleUtils.spawnScatteringParticle(
                     ParticleUtils.getItemParticle(ParticleTypes.ITEM_SLIME, getItem()),
-                    level, position(), random, 0.2, 0.08, 16
+                    level(), position(), random, 0.2, 0.08, 16
             );
         }
     }
@@ -74,7 +75,7 @@ public class ThrownSlimeballEntity extends ThrowableItemProjectile {
         var entity = entityHitResult.getEntity();
         if (entity instanceof LivingEntity) {
             ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 4));
-            level.broadcastEntityEvent(this, (byte) 4);
+            level().broadcastEntityEvent(this, (byte) 4);
             discard();
         }
     }
@@ -97,7 +98,7 @@ public class ThrownSlimeballEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

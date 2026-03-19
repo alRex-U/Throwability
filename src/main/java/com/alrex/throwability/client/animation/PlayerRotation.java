@@ -1,32 +1,31 @@
 package com.alrex.throwability.client.animation;
 
-
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class PlayerRotation {
-    private final Quaternion rotation;
+    private final Quaternionf rotation;
     private final Vector3f center;
     private final Vector3f translation;
 
-    public PlayerRotation(Quaternion rotation) {
-        this.rotation = rotation.copy();
+    public PlayerRotation(Quaternionf rotation) {
+        this.rotation = new Quaternionf(rotation);
         this.center = this.translation = new Vector3f();
     }
 
-    public PlayerRotation(Quaternion rotation, Vector3f center) {
-        this.rotation = rotation.copy();
-        this.center = center.copy();
+    public PlayerRotation(Quaternionf rotation, Vector3f center) {
+        this.rotation = new Quaternionf(rotation);
+        this.center = new Vector3f(center);
         this.translation = new Vector3f();
     }
 
-    public PlayerRotation(Quaternion rotation, Vector3f center, Vector3f translation) {
-        this.rotation = rotation.copy();
-        this.center = center.copy();
-        this.translation = translation;
+    public PlayerRotation(Quaternionf rotation, Vector3f center, Vector3f translation) {
+        this.rotation = new Quaternionf(rotation);
+        this.center = new Vector3f(center);
+        this.translation = new Vector3f(translation);
     }
 
-    public Quaternion getRotation() {
+    public Quaternionf getRotation() {
         return rotation;
     }
 

@@ -43,7 +43,7 @@ public class WeaponThrowable implements IThrowable {
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         if (hasAttackDamage(stack)) {
             stack.hurtAndBreak(1, thrower, (player) -> player.broadcastBreakEvent(thrower.getUsedItemHand()));
-            ThrownWeaponEntity entity = new ThrownWeaponEntity(thrower.level, thrower, stack);
+            ThrownWeaponEntity entity = new ThrownWeaponEntity(thrower.level(), thrower, stack);
 
             var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 4.

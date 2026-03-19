@@ -7,10 +7,11 @@ import com.alrex.throwability.client.animation.Rotation;
 import com.alrex.throwability.common.ability.AbstractThrowingAbility;
 import com.alrex.throwability.common.ability.IThrowabilityProvider;
 import com.alrex.throwability.utils.MathUtil;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -47,7 +48,7 @@ public class ThrowingAnimation implements IAnimation {
     public PlayerRotation getModelRotation(Player player, @Nullable PlayerRotation parentRotation, float partialTick) {
         if (!(player instanceof IThrowabilityProvider)) return null;
         float rotAngle = getRotationAngle(player, ((IThrowabilityProvider) player).getThrowAbility(), partialTick);
-        return new PlayerRotation(Vector3f.YP.rotation(rotAngle));
+        return new PlayerRotation(Axis.YP.rotation(rotAngle));
     }
 
     @Override

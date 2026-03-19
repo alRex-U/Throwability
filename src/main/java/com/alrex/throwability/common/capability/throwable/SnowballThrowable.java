@@ -17,7 +17,7 @@ public class SnowballThrowable implements IThrowable {
         Item item = stack.getItem();
         if (item instanceof SnowballItem) {
             var entity = new ThrownSlimeballEntity(
-                    thrower.level, thrower
+                    thrower.level(), thrower
             );
             Vec3 throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.

@@ -14,7 +14,7 @@ public class ArrowThrowable implements IThrowable {
     public Entity throwAsEntity(Player thrower, ItemStack stack, int chargedTick) {
         Item item = stack.getItem();
         if (item instanceof ArrowItem arrowItem) {
-            var entity = arrowItem.createArrow(thrower.level, stack, thrower);
+            var entity = arrowItem.createArrow(thrower.level(), stack, thrower);
 
             var throwVec = ThrowUtil.getBasicThrowingVector(thrower);
             double speedScale = 3.
