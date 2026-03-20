@@ -32,6 +32,7 @@ public class ThrowPowerMeter extends AbstractGui {
 
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent.Pre event) {
+		if (ThrowabilityConfig.Client.HIDE_HUD.get()) return;
 		Minecraft mc = Minecraft.getInstance();
 		PlayerEntity player = mc.player;
 		if (player == null || event.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE) return;
