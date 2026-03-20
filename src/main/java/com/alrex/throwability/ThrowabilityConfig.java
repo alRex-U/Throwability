@@ -6,6 +6,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class ThrowabilityConfig {
     public static class Client {
         public static final ForgeConfigSpec.BooleanValue HUD_FADE_IN;
+        public static final ForgeConfigSpec.BooleanValue HIDE_HUD;
         public static final ForgeConfigSpec.EnumValue<EntityThrowControlType> ENTITY_THROW_CONTROL;
 
         private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -15,6 +16,7 @@ public class ThrowabilityConfig {
             BUILDER.push("hud");
             {
                 HUD_FADE_IN = BUILDER.define("fade_in", true);
+                HIDE_HUD = BUILDER.define("hide", false);
             }
             BUILDER.pop();
             BUILDER.push("control");

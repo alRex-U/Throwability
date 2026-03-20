@@ -57,6 +57,7 @@ public class ThrowPowerMeter extends GuiComponent implements IIngameOverlay {
 	}
 
 	private void renderMeter(PoseStack stack, AbstractThrowingAbility throwingAbility, float partialTick, int screenHeight, int screenWidth) {
+        if (ThrowabilityConfig.Client.HIDE_HUD.get()) return;
 		Minecraft mc = Minecraft.getInstance();
 
 		float chargePhase = Mth.clamp((throwingAbility.getChargingTick() + partialTick) / throwingAbility.getMaxChargingTick(), 0, 1);
